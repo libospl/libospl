@@ -16,6 +16,7 @@ Because I want to make a powerful photo library, an open source photo library an
 ### Features
 OSPL is meant to be compatible with all photos types and metadata types, such as Apple Live Photos, slow motion videos and all other cool stuff you can do with your phone and photo cameras.
 
-### What are we working on?
-- You can look at the current version project from github [here](https://github.com/AngeloFrangione/libospl/projects), we keep it updated as we move on.
-- We have to redefine milestones and start porting the deprecated C version in Rust.
+
+### Build
+At the moment there is a lot of dead code so to silence the warnings compile with
+`RUSTFLAGS="$RUSTFLAGS -A dead_code" cargo build`
