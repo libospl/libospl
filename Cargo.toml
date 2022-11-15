@@ -10,3 +10,4 @@ path = "src/ospl.rs"
 
 
 [dependencies]
+futures = "0.3"
