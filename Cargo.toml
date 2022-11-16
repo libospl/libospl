@@ -6,7 +6,7 @@ edition = "2021"
 
 [lib]
 name = "ospl"
-path = "src/ospl.rs"
+path = "src/lib.rs"
 
 
 [dependencies]
