@@ -1,7 +1,9 @@
 [package]
-name = "libospl"
+authors = ["Angelo Frangione", "Alan Beveridge"]
+name = "ospl"
 version = "0.1.0"
 edition = "2021"
+description = "Photo management acroos all platforms"
 
 
 [lib]
