@@ -30,7 +30,7 @@ impl Directory
 				{
 					match fs::set_permissions(&self.path, fs::Permissions::from_mode(0o777))
 					{
-						Ok(_) => println!("sucessfully set permissions"),
+						Ok(_) => {},
 						Err(_) => {},
 					}
 				}

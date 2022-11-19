@@ -10,3 +10,5 @@ path = "src/ospl.rs"
 
 
 [dependencies]
+rand = "0.8.5"
+

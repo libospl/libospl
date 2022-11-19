@@ -32,31 +32,67 @@ pub struct Library
 
 impl Library
 {
-	pub fn create(path: &String) -> Self
+	pub fn create(path: &String) -> Option<Self>
 	{
-		let lib = Library
-		{
-			path: path.clone(),
-			db: Database::create(&path),
-		};
 		match Directory::from(&path).create()
 		{
-			Ok(_) => {} ,
-			Err(n) => println!("{:?}", n),
+			Ok(_) =>
+			{
+				Some(Library
+				{
+					path: path.clone(),
+					db: Database::create(&path),
+				})
+			},
+			Err(n) => {println!("{:?}", n); None},
 		}
-		lib
 	}
 }
 
 #[cfg(test)]
-mod tests 
+mod tests
 {
 	use super::*;
 
-	#[test]
-	fn it_works()
+	use rand::{thread_rng, Rng};
+	use rand::distributions::Alphanumeric;
+
+	static TEST_DIR: &str = "/tmp/";
+	static LIBRARY_CREATE_ERROR: &str = "error creating library";
+
+	fn remove_test_path(path: String)
 	{
-		let library = Library::create(&"~/Pictures/photos.ospl".to_string());
-		assert_eq!(library.path, "~/Pictures/photos.ospl");
+		println!("removing test dir");
+		match std::fs::remove_dir_all(path)
+		{
+			Ok(_) => {},
+			Err(e) => {println!("{:?}", e)}
+		}
+	}
+
+	fn generate_test_path() -> String
+	{
+		let rand_string: String = thread_rng()
+			.sample_iter(&Alphanumeric)
+			.take(30)
+			.map(char::from)
+			.collect();
+		TEST_DIR.to_string() + &rand_string + &LIBRARY_EXTENSION.to_string()
+	}
+
+	#[test]
+	fn library_path()
+	{
+		let path = generate_test_path();
+		let _library = match Library::create(&path)
+		{
+			Some(lib) =>
+			{
+				println!("checking if {} == {}", lib.path, path);
+				assert_eq!(lib.path, path);
+			},
+			None => {panic!("{}", LIBRARY_CREATE_ERROR)},
+		};
+		remove_test_path(path);
 	}
 }
