@@ -41,7 +41,14 @@ impl Library
 				Some(Library
 				{
 					path: path.clone(),
-					db: Database::create(&path),
+					db:
+					{
+						match Database::create(&path)
+						{
+							Ok(db) => db,
+							Err(e) => return None
+						}
+					},
 				})
 			},
 			Err(n) => {println!("{:?}", n); None},
@@ -135,5 +142,17 @@ mod tests
 		assert!(check_table_presence("contains", &db_path));
 		assert!(check_table_presence("albums", &db_path));
 		remove_test_path(path);
+	}
+
+	#[test]
+	#[should_panic]
+	fn create_library_no_permissions()
+	{
+		let _library = match Library::create(&"/".to_string())
+		{
+			Some(_) => println!("trying to create library at path '/' should not return Some()"),
+			None => {panic!("could not create library at path '/'")}
+		};
+
 	}
 }
