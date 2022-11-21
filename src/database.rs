@@ -1,4 +1,5 @@
 use super::DATABASE_FILENAME;
+use super::Error;
 
 use rusqlite::{Connection};
 
@@ -11,17 +12,24 @@ pub struct Database
 
 impl Database
 {
-	pub fn create(path: &String) -> Self
+	pub fn create(path: &String) -> Result<Self, Error>
 	{
-		let connection = Connection::open(path.clone() + "/" + DATABASE_FILENAME).unwrap();
-		match connection.execute_batch(DATABASE_SQL)
+		let connection = match Connection::open(path.clone() + "/" + DATABASE_FILENAME)
 		{
-			Ok(_) => println!("success!"),
-			Err(e) => println!("error creating db: {:?}", e),
+			Ok(c) => Ok(c),
+			Err(why) => return Err(Error::Other)
 		};
-		Database
+		
+		match connection?.execute_batch(DATABASE_SQL)
 		{
-			path: path.clone() + DATABASE_FILENAME,
+			Ok(_) =>
+			{
+				return Ok(Database
+				{
+					path: path.clone() + DATABASE_FILENAME,
+				})
+			},
+			Err(why) => return Err(Error::Other)
 		}
 	}
 }
