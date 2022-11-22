@@ -32,26 +32,19 @@ pub struct Library
 
 impl Library
 {
-	pub fn create(path: &String) -> Option<Self>
+	pub fn create(path: &String) -> Result<Self, Error>
 	{
 		match Directory::from(&path).create()
 		{
 			Ok(_) =>
 			{
-				Some(Library
+				Ok(Library
 				{
 					path: path.clone(),
-					db:
-					{
-						match Database::create(&path)
-						{
-							Ok(db) => db,
-							Err(e) => return None
-						}
-					},
+					db: Database::create(&path)?
 				})
 			},
-			Err(n) => {println!("{:?}", n); None},
+			Err(e) => return Err(e),
 		}
 	}
 }
@@ -111,12 +104,12 @@ mod tests
 		let path = generate_test_path();
 		let _library = match Library::create(&path)
 		{
-			Some(lib) =>
+			Ok(lib) =>
 			{
 				println!("check if {} == {}", lib.path, path);
 				assert_eq!(lib.path, path);
 			},
-			None => {panic!("{}", LIBRARY_CREATE_ERROR)},
+			Err(e) => {panic!("{}: {:?}", LIBRARY_CREATE_ERROR, e)},
 		};
 		remove_test_path(path);
 	}
@@ -128,12 +121,12 @@ mod tests
 
 		let _library = match Library::create(&path)
 		{
-			Some(_lib) =>
+			Ok(_lib) =>
 			{
 				println!("checking if database has been created at {}", &db_path);
 				assert!(std::path::Path::new(&db_path).exists());
 			},
-			None => panic!("{}", LIBRARY_CREATE_ERROR),
+			Err(e) => panic!("{}: {:?}", LIBRARY_CREATE_ERROR, e),
 		};
 		assert!(check_table_presence("settings", &db_path));
 		assert!(check_table_presence("photos", &db_path));
@@ -150,9 +143,8 @@ mod tests
 	{
 		let _library = match Library::create(&"/".to_string())
 		{
-			Some(_) => println!("trying to create library at path '/' should not return Some()"),
-			None => {panic!("could not create library at path '/'")}
+			Ok(_) => println!("trying to create library at path '/' should not return Some()"),
+			Err(_) => {panic!("could not create library at path '/'")} // TODO: check if the error is permission denied
 		};
-
 	}
 }
