@@ -53,6 +53,22 @@ pub struct Library
 
 impl Library
 {
+	/// Creates a new empty ospl library.
+	///
+	/// This function will create a folder at the given path, create the database file
+	/// and the subfolders the library needs to work.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use ospl::Library;
+	/// let library = match Library::create(&"/my/awesome/path.ospl/".to_string())
+	/// {
+	/// 	Ok(_) => println!("Success!"),
+	/// 	Err(e) => println!("An error occured: {:?}", e),
+	/// };
+	///
+	///
 	pub fn create(path: &String) -> Result<Self, Error>
 	{
 		match Directory::from(&path)?.create()
