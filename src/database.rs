@@ -31,7 +31,7 @@ pub struct Database
 
 impl Database
 {
-	pub fn create(path: &String) -> Result<Self, Error>
+	pub(crate) fn create(path: &String) -> Result<Self, Error>
 	{
 		let connection = match Connection::open(path.clone() + "/" + DATABASE_FILENAME)
 		{
