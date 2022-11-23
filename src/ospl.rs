@@ -34,7 +34,7 @@ impl Library
 {
 	pub fn create(path: &String) -> Result<Self, Error>
 	{
-		match Directory::from(&path).create()
+		match Directory::from(&path)?.create()
 		{
 			Ok(_) =>
 			{
@@ -44,7 +44,7 @@ impl Library
 					db: Database::create(&path)?
 				})
 			},
-			Err(e) => return Err(e),
+			Err(e) => Err(e),
 		}
 	}
 }
