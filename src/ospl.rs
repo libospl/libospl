@@ -34,22 +34,28 @@ impl Library
 {
 	pub fn create(path: &String) -> Option<Self>
 	{
-		match Directory::from(&path).expect("Failed to make dir.").create()
+		match Directory::from(&path)
 		{
-			Ok(_) =>
+			Ok(res) =>
 			{
-				Some(Library
-				{
-					path: path.clone(),
-					db:
-					{
-						match Database::create(&path)
+				match Directory::create(res) {
+					Ok(_) => Some(Library
 						{
-							Ok(db) => db,
-							Err(e) => return None
-						}
+							path: path.clone(),
+							db:
+							{
+								match Database::create(&path)
+								{
+									Ok(db) => db,
+									Err(_e) => return None
+								}
+							},
+						}),
+					Err(_e) => {
+						None
 					},
-				})
+				}
+				
 			},
 			Err(n) => {println!("{:?}", n); None},
 		}
