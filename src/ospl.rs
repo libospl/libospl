@@ -14,14 +14,15 @@ use directory::Directory;
 #[derive(Debug)]
 pub enum Error
 {
-	Other = -1000,	// other error
-	Exists,			// the file or folder already exists
-	DB,				// database communication failed
-	NotFound,		// element not found
-	NotSupported,	// element not supported
-	Thumb,			// thumbnail creation failed
-	PhoNF,			// photo not found in db
-	AlbNF,			// album not found in db
+	Other = -1000,		// other error
+	Exists,				// the file or folder already exists
+	DB,					// database communication failed
+	NotFound,			// element not found
+	PermissionDenied,	// no permission to create or read file
+	NotSupported,		// element not supported
+	Thumb,				// thumbnail creation failed
+	PhoNF,				// photo not found in db
+	AlbNF,				// album not found in db
 }
 
 pub struct Library
@@ -141,10 +142,36 @@ mod tests
 	#[should_panic]
 	fn create_library_no_permissions()
 	{
+		let _library = match Library::create(&"/root/library".to_string())
+		{
+			Ok(_) => println!("trying to create library at path '/root/library' should return permission denied"),
+			Err(e) =>
+			{
+				match e
+				{
+					Error::PermissionDenied => panic!("ok: could not create library at path '/root/library': permission denied"),
+					_ => println!("error: unexpected error returned, but shouldn't have: {:?}", e),
+				}
+			}
+		};
+	}
+
+	#[test]
+	#[should_panic]
+	fn create_library_exists()
+	{
 		let _library = match Library::create(&"/".to_string())
 		{
-			Ok(_) => println!("trying to create library at path '/' should not return Some()"),
-			Err(_) => {panic!("could not create library at path '/'")} // TODO: check if the error is permission denied
+			Ok(_) => println!("trying to create library at path '/' should return path already exists"),
+			Err(e) =>
+			{
+				match e
+				{
+					Error::Exists => panic!("ok: could not create library at path '/': folder exists"),
+					_ => println!("error: unexpected error returned, but shouldn't have: {:?}", e),
+				}
+			}
 		};
 	}
 }
+
