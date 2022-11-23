@@ -34,7 +34,7 @@ impl Library
 {
 	pub fn create(path: &String) -> Option<Self>
 	{
-		match Directory::from(&path).create()
+		match Directory::from(&path).expect("Failed to make dir.").create()
 		{
 			Ok(_) =>
 			{
