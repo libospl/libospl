@@ -32,7 +32,7 @@ impl Library
 {
 	pub fn create(path: &String) -> Result<Self, Error>
 	{
-		match Directory::from(&path).expect("Failed to make dir.").create()
+		match Directory::from(&path)?.create()
 		{
 			Ok(_) =>
 			{
@@ -42,7 +42,7 @@ impl Library
 					db: Database::create(&path)?
 				})
 			},
-			Err(e) => return Err(e),
+			Err(e) => Err(e),
 		}
 	}
 }
@@ -57,7 +57,7 @@ mod tests {
     use rusqlite::Connection;
 
     static TEST_DIR: &str = "/tmp/";
-    static LIBRARY_CREATE_ERROR: &str = "error creating library";
+    static LIBRARY_CREATE_ERROR: &str = "Error creating library!";
 
     fn remove_test_path(path: String) {
         println!("removing test dir");
@@ -96,11 +96,11 @@ mod tests {
     fn library_path() {
         let path = generate_test_path();
         let _library = match Library::create(&path) {
-            Some(lib) => {
+            Ok(lib) => {
                 println!("check if {} == {}", lib.path, path);
                 assert_eq!(lib.path, path);
             }
-            None => {
+            Err(_e) => {
                 panic!("{}", LIBRARY_CREATE_ERROR)
             }
         };
@@ -112,11 +112,11 @@ mod tests {
         let db_path = path.clone() + "/database.db";
 
         let _library = match Library::create(&path) {
-            Some(_lib) => {
+            Ok(_lib) => {
                 println!("checking if database has been created at {}", &db_path);
                 assert!(std::path::Path::new(&db_path).exists());
             }
-            None => panic!("{}", LIBRARY_CREATE_ERROR),
+            Err(_e) => panic!("{}", LIBRARY_CREATE_ERROR),
         };
         assert!(check_table_presence("settings", &db_path));
         assert!(check_table_presence("photos", &db_path));
@@ -131,8 +131,8 @@ mod tests {
     #[should_panic]
     fn create_library_no_permissions() {
         let _library = match Library::create(&"/".to_string()) {
-            Some(_) => println!("trying to create library at path '/' should not return Some()"),
-            None => {
+            Ok(_) => println!("trying to create library at path '/' should not return Some()"),
+            Err(_e) => {
                 panic!("could not create library at path '/'")
             }
         };
