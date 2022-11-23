@@ -1,6 +1,7 @@
 use super::Error;
 
 use std::fs;
+use std::io::ErrorKind;
 
 #[cfg(all(unix))]
 use std::os::unix::fs::PermissionsExt;
@@ -38,8 +39,12 @@ impl Directory
 			},
 			Err(why) =>
 			{
-				println!("! {:?}", why.kind()); // TODO: match the dir creation error
-				Err(Error::Other)
+				match why.kind()
+				{
+					ErrorKind::AlreadyExists => return Err(Error::Exists),
+					ErrorKind::PermissionDenied => return Err(Error::PermissionDenied),
+					_ => return Err(Error::Other),
+				}
 			},
 		}
 	}
