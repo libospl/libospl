@@ -28,30 +28,23 @@ pub struct Library {
     db: Database,
 }
 
-impl Library {
-    pub fn create(path: &String) -> Option<Self> {
-        match Directory::from(&path) {
-            Ok(res) => match Directory::create(res) {
-                Ok(_) => Some(Library {
-                    path: path.clone(),
-                    db: {
-                        match Database::create(&path) {
-                            Ok(db) => db,
-                            Err(_e) => return None,
-                        }
-                    },
-                }),
-                Err(_e) => {
-                    println!("{:?}", _e);
-                    None
-                }
-            },
-            Err(n) => {
-                println!("{:?}", n);
-                None
-            }
-        }
-    }
+impl Library
+{
+	pub fn create(path: &String) -> Result<Self, Error>
+	{
+		match Directory::from(&path).expect("Failed to make dir.").create()
+		{
+			Ok(_) =>
+			{
+				Ok(Library
+				{
+					path: path.clone(),
+					db: Database::create(&path)?
+				})
+			},
+			Err(e) => return Err(e),
+		}
+	}
 }
 
 #[cfg(test)]
