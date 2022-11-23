@@ -1,7 +1,6 @@
 use super::Error;
 
 use std::fs;
-use std::path::Path;
 
 #[cfg(all(unix))]
 use std::os::unix::fs::PermissionsExt;
@@ -15,16 +14,7 @@ impl Directory
 {
 	pub fn from(path: &String) -> Result<Self, Error>
 	{
-		let exists = Path::new(path).exists();
-
-		match exists {
-			true => return Ok(Directory {
-				path: path.clone(),
-			}),
-			false => return Err(Error::Other)
-		}
-
-		
+		Ok(Directory { path: path.clone()})
 	}
 
 	pub fn create(self) -> Result<(), Error>
