@@ -12,12 +12,12 @@ pub struct Directory
 
 impl Directory
 {
-	pub fn from(path: &String) -> Self
+	pub fn from(path: &String) -> Result<Self, Error>
 	{
-		Directory
+		Ok(Directory 
 		{
-			path: path.clone(),
-		}
+			path: path.clone() 
+		})
 	}
 
 	pub fn create(self) -> Result<(), Error>
