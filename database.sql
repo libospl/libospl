@@ -1,58 +1,78 @@
-CREATE TABLE IF NOT EXISTS `settings` (
-	`name`	TEXT NOT NULL UNIQUE,
-	`value`	TEXT,
-	PRIMARY KEY(`name`)
+-- Table where each row represents a setting.
+CREATE TABLE IF NOT EXISTS settings (
+	name	TEXT NOT NULL UNIQUE,
+	value	TEXT,
+	PRIMARY KEY (name)
 );
-CREATE TABLE IF NOT EXISTS `photos` (
-	`id`				INTEGER NOT NULL UNIQUE,
-	`hash`				TEXT NOT NULL,
-	`original_name`		TEXT NOT NULL,
-	`new_name`			TEXT NOT NULL,
-	`import_datetime`	TEXT,
-	`random`			TEXT,
-	`import_year`		INTEGER,
-	`import_month`		INTEGER,
-	`import_day`		INTEGER,
-	`import_hour`		INTEGER,
-	`import_minute`		INTEGER,
-	`import_second`		INTEGER,
-	`exif_height`		INTEGER,
-	`exif_width`		INTEGER ,
-	`exif_time`			TEXT,
-	`exif_brand`		TEXT,
-	`exif_peripheral`	TEXT,
-	`fav`				INTEGER DEFAULT 0,
-	PRIMARY KEY(`id` AUTOINCREMENT)
+-- Table where each row represents a photo.
+CREATE TABLE IF NOT EXISTS photos (
+	id						INTEGER NOT NULL UNIQUE,
+	filename				TEXT NOT NULL UNIQUE,
+	hash					TEXT NOT NULL,
+	thumbnail_hash			TEXT,
+	import_datetime			DATETIME,
+	-- Image information
+	height					INTEGER,
+	width					INTEGER,
+	creation_datetime		DATETIME,
+	format					TEXT,
+	orientation				TEXT,
+	rating					INTEGER DEFAULT 0,
+	starred					INTEGER DEFAULT 0,
+	-- Image metadata
+	make					TEXT,
+	model					TEXT,
+	lens					TEXT,
+	aperture				REAL,
+	focal_length			REAL,
+	exposure_time			TEXT,
+	exposure_mode			INTEGER,
+	sensitivity				INTEGER,
+	flash					INTEGER,
+	metering_mode			INTEGER,
+	title					TEXT,
+	comment					TEXT,
+	-- Image position: TODO: Research this
+	-- Other
+	album					INTEGER,
+	-- Key configuration
+	FOREIGN KEY(album) REFERENCES albums(id),
+	PRIMARY KEY(id AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS `includes` (
-	`including_folder`	INTEGER,
-	`included_folder`	INTEGER,
-	FOREIGN KEY(`including_folder`) REFERENCES `folders`(`id`),
-	FOREIGN KEY(`included_folder`) REFERENCES `folders`(`id`),
-	PRIMARY KEY(`including_folder`,`included_folder`)
+
+-- Table where each row represents an album.
+CREATE TABLE IF NOT EXISTS albums (
+	id						INTEGER NOT NULL UNIQUE,
+	name					TEXT NOT NULL UNIQUE,
+	comment 				TEXT,
+	creation_datetime		TEXT,
+	modification_datetime	DATETIME,
+	collection				INTEGER,
+	FOREIGN KEY(collection) REFERENCES collections(id),
+	PRIMARY KEY(id AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS `holds` (
-	`held_folder`	INTEGER,
-	`holded_album`		INTEGER,
-	FOREIGN KEY(`holded_album`) REFERENCES `albums`(`id`),
-	FOREIGN KEY(`held_folder`) REFERENCES `folders`(`id`),
-	PRIMARY KEY(`held_folder`,`holded_album`)
+
+-- Table where each row represents a collection.
+CREATE TABLE IF NOT EXISTS collections (
+	id						INTEGER NOT NULL UNIQUE,
+	name					TEXT NOT NULL UNIQUE,
+	comment					TEXT,
+	creation_datetime		TEXT,
+	modification_datetime	DATETIME,
+	PRIMARY KEY(id AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS `folders` (
-	`id`	INTEGER NOT NULL UNIQUE,
-	`name`	INTEGER,
-	PRIMARY KEY(`id` AUTOINCREMENT)
+
+-- Table where each row represents a tag.
+CREATE TABLE IF NOT EXISTS tags (
+	id						INTEGER NOT NULL UNIQUE,
+	name					TEXT NOT NULL UNIQUE,
+	PRIMARY KEY(id AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS `contains` (
-	`containing_album`	INTEGER,
-	`contained_photo`	INTEGER,
-	FOREIGN KEY(`contained_photo`) REFERENCES `photos`(`id`),
-	FOREIGN KEY(`containing_album`) REFERENCES `albums`(`id`),
-	PRIMARY KEY(`containing_album`,`contained_photo`)
-);
-CREATE TABLE IF NOT EXISTS `albums` (
-	`id`	INTEGER NOT NULL UNIQUE,
-	`name`	TEXT,
-	PRIMARY KEY(`id` AUTOINCREMENT)
+-- Link table between photos and tags.
+CREATE TABLE IF NOT EXISTS photos_tags_map (
+	containing_tag			INTEGER NOT NULL,
+	contained_photo			INTEGER NOT NULL,
+	FOREIGN KEY(contained_photo) REFERENCES photos(id),
+	FOREIGN KEY(containing_tag) REFERENCES tags(id)
 );
 
