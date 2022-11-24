@@ -181,9 +181,9 @@ mod tests
 		};
 		assert!(check_table_presence("settings", &db_path));
 		assert!(check_table_presence("photos", &db_path));
-		assert!(check_table_presence("includes", &db_path));
-		assert!(check_table_presence("holds", &db_path));
-		assert!(check_table_presence("contains", &db_path));
+		assert!(check_table_presence("collections", &db_path));
+		assert!(check_table_presence("tags", &db_path));
+		assert!(check_table_presence("photos_tags_map", &db_path));
 		assert!(check_table_presence("albums", &db_path));
 		remove_test_path(path);
 	}
