@@ -34,15 +34,24 @@ use directory::Directory;
 #[derive(Debug)]
 pub enum Error
 {
-	Other = -1000,		// other error
-	Exists,				// the file or folder already exists
-	DB,					// database communication failed
-	NotFound,			// element not found
-	PermissionDenied,	// no permission to create or read file
-	NotSupported,		// element not supported
-	Thumb,				// thumbnail creation failed
-	PhoNF,				// photo not found in db
-	AlbNF,				// album not found in db
+	/// other error
+	Other = -1000,
+	/// the file or folder already exists
+	Exists,
+	/// database communication failed
+	DB,
+	/// element not found
+	NotFound,
+	/// no permission to create or read file
+	PermissionDenied,
+	/// element not supported
+	NotSupported,
+	/// thumbnail creation failed
+	Thumb,
+	/// photo not found in db
+	PhoNF,
+	/// album not found in db
+	AlbNF,
 }
 
 pub struct Library
