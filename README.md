@@ -23,5 +23,6 @@ Any help is welcome, see [CONTRIBUTING.md](CONTRIBUTING.md) to know how to contr
 
 
 ### Build
-At the moment there is a lot of dead code so to silence the warnings compile with
+At the moment there is a lot of dead code. To silence the warnings compile with
 `RUSTFLAGS="$RUSTFLAGS -A dead_code" cargo build`
+
