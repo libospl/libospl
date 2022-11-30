@@ -18,6 +18,11 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+//! libopl is a library of function to help developper making good photo library management interfaces.
+//!
+//! ospl creates a database for you, parses all metadata and can support a lot of different things other
+//! photo manager can do, but this crate is only meant to be used as an API.
+
 static DATABASE_FILENAME: &str = "database.db";
 static LIBRARY_EXTENSION: &str = ".ospl";
 
