@@ -15,6 +15,11 @@ Because I want to make a powerful photo library, an open source photo library an
 
 ### Features
 OSPL is meant to be compatible with all photos types and metadata types, such as Apple Live Photos, slow motion videos and all other cool stuff you can do with your phone and photo cameras.
+To see what's planned, you can look at [IDEAS.md](IDEAS.md)
+
+
+### Contributing
+Any help is welcome, see [CONTRIBUTING.md](CONTRIBUTING.md) to know how to contribute.
 
 
 ### Build
