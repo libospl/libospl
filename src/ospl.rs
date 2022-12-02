@@ -98,6 +98,27 @@ impl Library
 			Err(e) => Err(e),
 		}
 	}
+
+	/// Initializes the folders needed to import pictures, create collections and albums.
+	///
+	/// # Example
+	///
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// library.init().unwrap();
+	///
+	pub fn init(self) -> Result <(), Error>
+	{
+		let thumbnails_path: String = self.path.to_owned() + "/thumbnails";
+		let pictures_path: String = self.path.to_owned() + "/pictures";
+		let collections_path: String = self.path.to_owned() + "/collections";
+
+		Directory::from(&thumbnails_path)?.create()?;
+		Directory::from(&pictures_path)?.create()?;
+		Directory::from(&collections_path)?.create()?;
+		Ok(())
+	}
 }
 
 #[cfg(test)]
@@ -222,6 +243,19 @@ mod tests
 				}
 			}
 		};
+	}
+
+	#[test]
+	fn library_init()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+		assert!(std::path::Path::new(&(path.clone() + "/thumbnails")).exists());
+		assert!(std::path::Path::new(&(path.clone() + "/pictures")).exists());
+		assert!(std::path::Path::new(&(path.clone() + "/collections")).exists());
+		remove_test_path(path);
 	}
 }
 
