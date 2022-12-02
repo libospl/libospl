@@ -23,12 +23,12 @@
 //! ospl creates a database for you, parses all metadata and can support a lot of different things other
 //! photo manager can do, but this crate is only meant to be used as an API.
 
-static DATABASE_FILENAME: &str = "database.db";
-static LIBRARY_EXTENSION: &str = ".ospl";
+pub static DATABASE_FILENAME: &str = "database.db";
+pub static LIBRARY_EXTENSION: &str = ".ospl";
 
-static VERSION_MAJOR: &str = env!("CARGO_PKG_VERSION_MAJOR");
-static VERSION_MINOR: &str = env!("CARGO_PKG_VERSION_MINOR");
-static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
+pub static VERSION_MAJOR: &str = env!("CARGO_PKG_VERSION_MAJOR");
+pub static VERSION_MINOR: &str = env!("CARGO_PKG_VERSION_MINOR");
+pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 
 mod database;
 mod directory;
@@ -61,8 +61,8 @@ pub enum Error
 
 pub struct Library
 {
-	path: String,
-	db: Database,
+	pub path: String,
+	pub db: Database,
 }
 
 impl Library
