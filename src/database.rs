@@ -31,9 +31,9 @@ pub struct Database
 
 impl Database
 {
-	pub(crate) fn create(path: &String) -> Result<Self, Error>
+	pub(crate) fn create(path: &str) -> Result<Self, Error>
 	{
-		let connection = match Connection::open(path.clone() + "/" + DATABASE_FILENAME)
+		let connection = match Connection::open(path.to_owned() + "/" + DATABASE_FILENAME)
 		{
 			Ok(c) => Ok(c),
 			Err(_why) => return Err(Error::Other)
