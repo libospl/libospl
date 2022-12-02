@@ -33,11 +33,11 @@ pub(crate) struct Directory
 
 impl Directory
 {
-	pub(crate) fn from(path: &String) -> Result<Self, Error>
+	pub(crate) fn from(path: &str) -> Result<Self, Error>
 	{
 		Ok(Directory 
 		{
-			path: path.clone() 
+			path: path.to_owned()
 		})
 	}
 

@@ -83,7 +83,7 @@ impl Library
 	/// };
 	///
 	///
-	pub fn create(path: &String) -> Result<Self, Error>
+	pub fn create(path: &str) -> Result<Self, Error>
 	{
 		match Directory::from(&path)?.create()
 		{
@@ -91,7 +91,7 @@ impl Library
 			{
 				Ok(Library
 				{
-					path: path.clone(),
+					path: path.to_owned(),
 					db: Database::create(&path)?
 				})
 			},
