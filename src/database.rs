@@ -36,7 +36,7 @@ impl Database
 		let connection = match Connection::open(path.clone() + "/" + DATABASE_FILENAME)
 		{
 			Ok(c) => Ok(c),
-			Err(why) => return Err(Error::Other)
+			Err(_why) => return Err(Error::Other)
 		};
 		
 		match connection?.execute_batch(DATABASE_SQL)
@@ -45,10 +45,10 @@ impl Database
 			{
 				return Ok(Database
 				{
-					path: path.clone() + DATABASE_FILENAME,
+					path: path.to_owned() + DATABASE_FILENAME,
 				})
 			},
-			Err(why) => return Err(Error::Other)
+			Err(_why) => return Err(Error::Other)
 		}
 	}
 }
