@@ -36,7 +36,7 @@ impl Database
 		let connection = match Connection::open(path.clone() + "/" + DATABASE_FILENAME)
 		{
 			Ok(c) => Ok(c),
-			Err(why) => return Err(Error::Other)
+			Err(_why) => return Err(Error::Other)
 		};
 		
 		match connection?.execute_batch(DATABASE_SQL)
@@ -48,7 +48,26 @@ impl Database
 					path: path.clone() + DATABASE_FILENAME,
 				})
 			},
-			Err(why) => return Err(Error::Other)
+			Err(_why) => return Err(Error::Other)
 		}
+	}
+
+	pub(crate) fn create_collection(self, name: &String, comment: &String) -> Result<bool, Error>
+	{
+		/* Create a connection to the database. */
+		let connection: Result<Connection, Error> = match Connection::open(self.path.clone())
+		{
+			Ok(c) => Ok(c),
+			Err(_error) => return Err(Error::Other)
+		};
+		
+		/* Create a table with the name and comment passed along. */
+		match connection?.execute("INSERT INTO collections (name, comment) VALUES (?1, ?2)", (&name, &comment))
+		{
+			Ok(_result) => (),
+    		Err(err) => {println!("Database collection creation failed: {}", err)},
+		}
+			
+		Ok(true)
 	}
 }

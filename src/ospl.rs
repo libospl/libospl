@@ -99,6 +99,18 @@ impl Library
 		}
 	}
 
+	/// Create a collection in both the filesystem and the database.
+	pub fn create_collection(self, name: String, comment: String) -> Result <(), Error>
+	{
+		// TODO: Add folder creation here.
+		
+		match self.db.create_collection(&name, &comment)
+		{
+			Ok(_res) => Ok(()),
+			Err(error) => Err(error)
+		}
+	}
+
 	/// Initializes the folders needed to import pictures, create collections and albums.
 	///
 	/// # Example
