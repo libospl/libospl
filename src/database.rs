@@ -26,27 +26,38 @@ static DATABASE_SQL: &str = include_str!("../database.sql");
 
 pub struct Database
 {
-	pub path: String
+	pub path: String,
+	pub connection: Connection,
 }
 
 impl Database
 {
-	pub(crate) fn create(path: &str) -> Result<Self, Error>
+	/// Creates a database object, and returns it with a open connection
+	pub(crate) fn new(path: &str) -> Result<Self, Error>
 	{
-		let connection = match Connection::open(path.to_owned() + "/" + DATABASE_FILENAME)
+		match Connection::open(path.to_owned() + "/" + DATABASE_FILENAME)
 		{
-			Ok(c) => Ok(c),
+			Ok(c) =>
+			{
+				return Ok(Database
+				   {
+						path: path.to_owned() + "/" + DATABASE_FILENAME,
+						connection: c,
+				   });
+			}
 			Err(_why) => return Err(Error::Other)
 		};
-		
-		match connection?.execute_batch(DATABASE_SQL)
+	}
+
+	/// Create the database object and file, and inserts the main structure
+	pub(crate) fn create(path: &str) -> Result<Self, Error>
+	{
+		let db = Self::new(path)?;
+		match db.connection.execute_batch(DATABASE_SQL)
 		{
 			Ok(_) =>
 			{
-				return Ok(Database
-				{
-					path: path.to_owned() + DATABASE_FILENAME,
-				})
+				return Ok(db);
 			},
 			Err(_why) => return Err(Error::Other)
 		}
