@@ -48,19 +48,13 @@ pub enum Error
 	/// the file or folder already exists
 	Exists,
 	/// database communication failed
-	DB,
-	/// element not found
+	DatabaseError,
+	/// file or element not found
 	NotFound,
 	/// no permission to create or read file
 	PermissionDenied,
-	/// element not supported
+	/// file or element not supported
 	NotSupported,
-	/// thumbnail creation failed
-	Thumb,
-	/// photo not found in db
-	PhoNF,
-	/// album not found in db
-	AlbNF,
 	/// file is not an image file
 	NotAnImage,
 }
