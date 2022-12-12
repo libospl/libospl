@@ -19,6 +19,7 @@
 */
 use super::DATABASE_FILENAME;
 use super::Error;
+use crate::element::ElementDatabase;
 
 use rusqlite::{Connection};
 
@@ -61,5 +62,14 @@ impl Database
 			},
 			Err(_why) => return Err(Error::Other)
 		}
+	}
+}
+
+impl Database
+{
+	/// Inserts an element into the database
+	pub(crate) fn insert(&self, object: &dyn ElementDatabase) -> Result<u32, Error>
+	{
+		object.insert_into(self)
 	}
 }
