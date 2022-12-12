@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/AngeloFrangione/libospl.svg?style=shield)](https://app.circleci.com/pipelines/github/AngeloFrangione/libospl)
+[![GitHub milestone](https://img.shields.io/github/milestones/progress-percent/AngeloFrangione/libospl/1)](https://github.com/AngeloFrangione/libospl/milestones)
 
 # libospl - Open Source Photo Library
 ----------------------------------------
