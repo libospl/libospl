@@ -33,6 +33,8 @@ pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 mod database;
 mod directory;
 
+pub mod element;
+
 use database::Database;
 use directory::Directory;
 
