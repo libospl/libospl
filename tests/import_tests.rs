@@ -4,6 +4,7 @@ mod tests
 {
 	use ospl::Library;
 	use ospl::LIBRARY_EXTENSION;
+	use ospl::Error;
 	//use ospl::photo::Photo;
 
 	use rand::{thread_rng, Rng};
@@ -47,6 +48,66 @@ mod tests
 			Err(e) => panic!("error: importing not possible: {:?}", e)
 		}
 		remove_test_path(path);
+	}
+
+	#[test]
+	fn import_single_photo_on_folder()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+
+		match library.import_photo("tests/files/test_folder/")
+		{
+			Ok(_) => println!("import successfull but shouldn't have"),
+			Err(e) =>
+			{
+				match e
+				{
+					Error::NotFound => panic!("wrong return message: folder should exist"),
+					Error::NotAnImage => println!("importing not possible: {:?}", e),
+					_ => panic!("unexpected error"),
+				}
+			}
+		}
+		remove_test_path(path);
+	}
+
+	#[test]
+	#[should_panic]
+	fn import_photo_file_not_an_image()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+
+		assert_ne!(library.import_photo("tests/files/not_an_image.odt").err().unwrap(), Error::NotAnImage);
+	}
+
+	#[test]
+	#[should_panic]
+	fn import_photo_file_not_valid()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+
+		assert_ne!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotSupported);
+	}
+
+	#[test]
+	#[should_panic]
+	fn import_photo_no_string()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+
+		assert_ne!(library.import_photo("").err().unwrap(), Error::NotFound);
 	}
 }
 

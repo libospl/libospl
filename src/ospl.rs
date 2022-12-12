@@ -40,7 +40,7 @@ use database::Database;
 use directory::Directory;
 use photo::Photo;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Error
 {
 	/// other error
