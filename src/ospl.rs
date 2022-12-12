@@ -34,9 +34,11 @@ mod database;
 mod directory;
 
 pub mod element;
+pub mod photo;
 
 use database::Database;
 use directory::Directory;
+use photo::Photo;
 
 #[derive(Debug)]
 pub enum Error
@@ -59,12 +61,15 @@ pub enum Error
 	PhoNF,
 	/// album not found in db
 	AlbNF,
+	/// file is not an image file
+	NotAnImage,
 }
 
 pub struct Library
 {
 	pub path: String,
 	pub db: Database,
+	//TODO: pub fs: Filesystem,
 }
 
 impl Library
@@ -120,6 +125,25 @@ impl Library
 		Directory::from(&pictures_path)?.create()?;
 		Directory::from(&collections_path)?.create()?;
 		Ok(())
+	}
+
+	/// Imports a photo into the photo library
+	///
+	/// # Example
+	///
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// library.init().unwrap();
+	/// library.import_photo("my_awesome_picture.jpg");
+	///
+	pub fn import_photo(&self, photo_path: &str) -> Result<u32, Error>
+	{
+		let mut photo = Photo::new();
+		photo.from_file(&self.db, photo_path)?;
+		self.db.insert(&photo)?;
+		//TODO: self.fs.add(&photo);
+		Ok(0)
 	}
 }
 
