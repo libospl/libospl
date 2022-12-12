@@ -41,7 +41,7 @@ mod tests
 
 		library.init().unwrap();
 
-		match library.import_photo("files/test_photo.jpg")
+		match library.import_photo("tests/files/test_photo.jpg")
 		{
 			Ok(_) => {},
 			Err(e) => panic!("error: importing not possible: {:?}", e)

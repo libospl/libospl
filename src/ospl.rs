@@ -133,6 +133,10 @@ impl Library
 	///
 	pub fn import_photo(&self, photo_path: &str) -> Result<u32, Error>
 	{
+		if !std::path::Path::new(photo_path).exists()
+		{
+			return Err(Error::NotFound);
+		}
 		let mut photo = Photo::new();
 		photo.from_file(&self.db, photo_path)?;
 		self.db.insert(&photo)?;

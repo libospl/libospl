@@ -59,7 +59,7 @@ impl Photo
 	pub fn from_file(&mut self, _db: &Database, photo_path: &str)
 	-> Result <(), Error>
 	{
-		if !is_photo(photo_path)
+		if !is_photo(photo_path)?
 		{
 			return Err(Error::NotAnImage)
 		}
@@ -85,11 +85,32 @@ impl ElementDatabase for Photo
 	}
 }
 
-/// Checks wether the file is an image
-fn is_photo(_path: &str) -> bool
+/// Checks if the file is an image
+fn is_photo(path: &str) -> Result<bool, Error>
 {
-	//TODO: check using infer crate for example
-	true
+	let kind = match infer::get_from_path(path)
+	{
+		Ok(k) =>
+		{
+			match k // check the filetype
+			{
+				Some(ok) => ok.matcher_type(),
+				None => return Err(Error::NotSupported),
+			}
+		}
+		Err(e) =>
+		{
+			match e.kind()
+			{
+				_ => return Err(Error::NotAnImage),
+			}
+		}
+	};
+	if kind == infer::MatcherType::Image
+	{
+		return Ok(true);
+	}
+	Ok(false)
 }
 
 fn get_filename_from(path: &str) -> String
