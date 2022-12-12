@@ -108,7 +108,7 @@ impl Library
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// library.init().unwrap();
 	///
-	pub fn init(self) -> Result <(), Error>
+	pub fn init(&self) -> Result <(), Error>
 	{
 		let thumbnails_path: String = self.path.to_owned() + "/thumbnails";
 		let pictures_path: String = self.path.to_owned() + "/pictures";
