@@ -90,39 +90,15 @@ mod tests
 	}
 
 	#[test]
-	#[should_panic]
 	fn create_library_no_permissions()
 	{
-		let _library = match Library::create(&"/root/library".to_string())
-		{
-			Ok(_) => println!("trying to create library at path '/root/library' should return permission denied"),
-			Err(e) =>
-			{
-				match e
-				{
-					Error::PermissionDenied => panic!("ok: could not create library at path '/root/library': permission denied"),
-					_ => println!("error: unexpected error returned, but shouldn't have: {:?}", e),
-				}
-			}
-		};
+		assert_eq!(Library::create(&"/root/library".to_string()).err().unwrap(), Error::PermissionDenied);
 	}
 
 	#[test]
-	#[should_panic]
 	fn create_library_exists()
 	{
-		let _library = match Library::create(&"/".to_string())
-		{
-			Ok(_) => println!("trying to create library at path '/' should return path already exists"),
-			Err(e) =>
-			{
-				match e
-				{
-					Error::Exists => panic!("ok: could not create library at path '/': folder exists"),
-					_ => println!("error: unexpected error returned, but shouldn't have: {:?}", e),
-				}
-			}
-		};
+		assert_eq!(Library::create(&"/".to_string()).err().unwrap(), Error::Exists);
 	}
 
 	#[test]
