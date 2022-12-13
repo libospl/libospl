@@ -70,6 +70,7 @@ mod tests
 
 		library.init().unwrap();
 		assert_eq!(library.import_photo("tests/files/not_an_image.odt").err().unwrap(), Error::NotAnImage);
+		remove_test_path(path);
 	}
 
 	#[test]
@@ -79,6 +80,7 @@ mod tests
 		let library = Library::create(&path).unwrap();
 		library.init().unwrap();
 		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotSupported);
+		remove_test_path(path);
 	}
 
 	#[test]
@@ -90,6 +92,7 @@ mod tests
 		library.init().unwrap();
 
 		assert_eq!(library.import_photo("").err().unwrap(), Error::NotFound);
+		remove_test_path(path);
 	}
 
 	#[test]
@@ -110,5 +113,6 @@ mod tests
 			reset_perms.arg("777").arg("tests/files/test_photo_no_permissions.jpg");
 			reset_perms.status().expect("process failed to execute");
 		}
+		remove_test_path(path);
 	}
 }
