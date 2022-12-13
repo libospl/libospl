@@ -21,6 +21,7 @@
 use crate::element::ElementDatabase;
 use crate::Database;
 
+use crate::utility;
 use super::Error;
 use std::path::Path;
 
@@ -102,13 +103,7 @@ fn is_photo(path: &str) -> Result<bool, Error>
 				None => return Err(Error::NotSupported),
 			}
 		}
-		Err(e) =>
-		{
-			match e.kind()
-			{
-				_ => return Err(Error::NotAnImage),
-			}
-		}
+		Err(e) => return Err(utility::match_io_errorkind(e.kind())),
 	};
 	if kind == infer::MatcherType::Image
 	{
