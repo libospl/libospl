@@ -14,3 +14,6 @@ rusqlite = { version = "0.28.0", features = ["bundled"] }
 rand = "0.8.5"
 infer = "0.11.0"
 
+[dependencies.xxhash-rust]
+version = "0.8.6"
+features = ["xxh3"]

@@ -20,9 +20,11 @@
 
 use crate::element::ElementDatabase;
 use crate::Database;
-
+use crate::Error;
 use crate::utility;
-use super::Error;
+
+use xxhash_rust::xxh3::xxh3_128;
+
 use std::path::Path;
 
 /// Structure containing a replica of sqlite data
@@ -32,7 +34,7 @@ pub struct Photo
 {
 	id:					u32,
 	filename:			String,
-	hash:				String,
+	hash:				u128,
 	import_datetime:	String,
 	rating:				u32,
 	starred:			bool,
@@ -47,7 +49,7 @@ impl Photo
 		{
 			id:					0,
 			filename:			String::from(""),
-			hash:				String::from(""),
+			hash:				0,
 			import_datetime:	String::from(""),
 			rating:				0,
 			starred:			false,
@@ -69,7 +71,7 @@ impl Photo
 			return Err(Error::NotAnImage);
 		}
 		self.filename = get_filename_from(photo_path);
-		//TODO: fill hash using a fast hash algorithm like xxHash
+		self.hash = xxh3_128(&std::fs::read(photo_path).unwrap());
 		println!("file: {:#?}", &self);
 		Ok(())
 	}
