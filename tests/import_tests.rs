@@ -51,26 +51,14 @@ mod tests
 	}
 
 	#[test]
+	#[should_panic]
 	fn import_single_photo_on_folder()
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
 		library.init().unwrap();
-
-		match library.import_photo("tests/files/test_folder/")
-		{
-			Ok(_) => println!("import successfull but shouldn't have"),
-			Err(e) =>
-			{
-				match e
-				{
-					Error::NotFound => panic!("wrong return message: folder should exist"),
-					Error::NotAnImage => println!("importing not possible: {:?}", e),
-					_ => panic!("unexpected error"),
-				}
-			}
-		}
+		assert_ne!(library.import_photo("tests/files/test_folder/").err().unwrap(), Error::IsADirectory);
 		remove_test_path(path);
 	}
 

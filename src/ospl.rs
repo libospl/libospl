@@ -58,6 +58,8 @@ pub enum Error
 	NotSupported,
 	/// file is not an image file
 	NotAnImage,
+	/// A directory was specified when a non-directory was expected.
+	IsADirectory,
 }
 
 pub struct Library

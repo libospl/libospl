@@ -59,9 +59,13 @@ impl Photo
 	pub fn from_file(&mut self, _db: &Database, photo_path: &str)
 	-> Result <(), Error>
 	{
+		if Path::new(photo_path).is_dir()
+		{
+			return Err(Error::IsADirectory);
+		}
 		if !is_photo(photo_path)?
 		{
-			return Err(Error::NotAnImage)
+			return Err(Error::NotAnImage);
 		}
 		self.filename = get_filename_from(photo_path);
 		//TODO: fill hash using a fast hash algorithm like xxHash
