@@ -32,6 +32,7 @@ pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 
 mod database;
 mod directory;
+mod utility;
 
 pub mod element;
 pub mod photo;
