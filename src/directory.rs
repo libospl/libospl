@@ -19,9 +19,9 @@
 */
 
 use super::Error;
+use crate::utility;
 
 use std::fs;
-use std::io::ErrorKind;
 
 #[cfg(all(unix))]
 use std::os::unix::fs::PermissionsExt;
@@ -57,15 +57,7 @@ impl Directory
 				}
 				Ok(())
 			},
-			Err(why) =>
-			{
-				match why.kind()
-				{
-					ErrorKind::AlreadyExists => return Err(Error::Exists),
-					ErrorKind::PermissionDenied => return Err(Error::PermissionDenied),
-					_ => return Err(Error::Other),
-				}
-			},
+			Err(why) => Err(utility::match_io_errorkind(why.kind()))
 		}
 	}
 }
