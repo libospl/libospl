@@ -7,6 +7,7 @@ mod tests
 	use ospl::Error;
 	//use ospl::photo::Photo;
 
+	use std::fs;
 	use rand::{thread_rng, Rng};
 	use rand::distributions::Alphanumeric;
 
@@ -90,5 +91,24 @@ mod tests
 
 		assert_eq!(library.import_photo("").err().unwrap(), Error::NotFound);
 	}
-}
 
+	#[test]
+	fn import_photo_permission_denied()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+		library.init().unwrap();
+		#[cfg(all(unix))]
+		{
+			use std::os::unix::fs::PermissionsExt;
+			fs::set_permissions("tests/files/test_photo_no_permissions.jpg", fs::Permissions::from_mode(0o000)).unwrap();
+		}
+		assert_eq!(library.import_photo("tests/files/test_photo_no_permissions.jpg").err().unwrap(), Error::PermissionDenied);
+		#[cfg(all(unix))]
+		{
+			let mut reset_perms = std::process::Command::new("chmod");
+			reset_perms.arg("777").arg("tests/files/test_photo_no_permissions.jpg");
+			reset_perms.status().expect("process failed to execute");
+		}
+	}
+}
