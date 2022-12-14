@@ -79,10 +79,14 @@ impl Photo
 
 impl ElementDatabase for Photo
 {
-	fn insert_into(&self, _db: &Database) -> Result<u32, Error>
+	fn insert_into(&self, db: &Database) -> Result<u32, Error>
 	{
-		//TODO: insert self into database
-		Ok(1)
+		match db.connection.execute("INSERT INTO photos (filename, hash) VALUES (?1, ?2)",
+		(&self.filename, &self.hash.to_ne_bytes()))
+		{
+			Ok(_) => Ok(1),
+			Err(_) => return Err(Error::Other)
+		}
 	}
 
 	fn from_id(&self, _db: &Database, _id: u32) -> Result<(), Error>
