@@ -27,5 +27,5 @@ pub trait ElementDatabase
 	/// Insert the element into the given database
 	fn insert_into(&self, db: &Database) -> Result<u32, Error>;
 	/// Fill the element with data from database
-	fn from_id(&self, db: &Database, id: u32) -> Result<(), Error>;
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>;
 }
