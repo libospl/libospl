@@ -72,4 +72,9 @@ impl Database
 	{
 		object.insert_into(self)
 	}
+
+	pub(crate) fn from_id(&self, object: &mut dyn ElementDatabase, id: u32) -> Result<(), Error>
+	{
+		object.from_id(self, id)
+	}
 }

@@ -72,7 +72,7 @@ impl Photo
 		}
 		self.filename = get_filename_from(photo_path);
 		self.hash = xxh3_128(&std::fs::read(photo_path).unwrap());
-		println!("file: {:#?}", &self);
+		println!("import from file:\n{:#?}", &self);
 		Ok(())
 	}
 }
@@ -89,9 +89,17 @@ impl ElementDatabase for Photo
 		}
 	}
 
-	fn from_id(&self, _db: &Database, _id: u32) -> Result<(), Error>
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
 	{
-		//TODO: fill self with data from database
+		// fill self with the photo table from the database with the id
+		let mut stmt = db.connection.prepare("SELECT * FROM photos WHERE id = ?1").unwrap();
+		let mut rows = stmt.query(&[&id]).unwrap();
+		while let Some(row) = rows.next().unwrap()
+		{
+			self.id = row.get(0).unwrap();
+			self.filename = row.get(1).unwrap();
+			self.hash = u128::from_ne_bytes(row.get(2).unwrap());
+		}
 		Ok(())
 	}
 }
