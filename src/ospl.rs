@@ -37,6 +37,8 @@ mod utility;
 pub mod element;
 pub mod photo;
 
+use std::io::ErrorKind;
+
 use database::Database;
 use directory::Directory;
 use photo::Photo;
@@ -60,6 +62,35 @@ pub enum Error
 	NotAnImage,
 	/// A directory was specified when a non-directory was expected.
 	IsADirectory,
+}
+
+impl From<rusqlite::Error> for Error
+{
+	fn from(error: rusqlite::Error) -> Self
+	{
+		match error
+		{
+			rusqlite::Error::SqliteFailure(error, _) => match error.code
+			{
+				_ => Error::DatabaseError,
+			},
+			rusqlite::Error::QueryReturnedNoRows => Error::DatabaseError,
+			_ => Error::DatabaseError,
+		}
+	}
+}
+
+impl From<std::io::Error> for Error
+{
+	fn from(error: std::io::Error) -> Self
+	{
+		match error.kind()
+		{
+			ErrorKind::AlreadyExists => Error::Exists,
+			ErrorKind::PermissionDenied => Error::PermissionDenied,
+			_ => Error::Other,
+		}
+	}
 }
 
 pub struct Library
