@@ -42,13 +42,13 @@ When cargo fmt will be stable enough, we will implement the rustfmt.toml file to
 ```rust
 // this is NOT right
 fn main() -> i32{
-	0;
+	0
 }
 
 // this is right
 fn main() -> i32
 {
-	0;
+	0
 }
 
 ```
@@ -64,22 +64,22 @@ fn main() -> i32
 // This is NOT right
 fn my_function(s1: String, s2: String, s3: String, s4: String, s5: String) -> i32
 {
-	1;
+	1
 }
 fn my_second() -> i32
 {
-	2;
+	2
 }
 
 // This is right
 fn my_function(s1: String, s2: String)
 {
-	1;
+	1
 }
 
 fn my_second(s1: String, s2 String)
 {
-	2;
+	2
 }
 
 ```
