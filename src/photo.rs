@@ -23,6 +23,7 @@ use crate::Database;
 use crate::Error;
 use crate::utility;
 
+use chrono::naive::NaiveDateTime;
 use xxhash_rust::xxh3::xxh3_128;
 
 use std::path::Path;
@@ -32,10 +33,10 @@ use std::path::Path;
 #[allow(dead_code)]
 pub struct Photo
 {
-	pub id:					u32,
+	pub id:				u32,
 	filename:			String,
 	hash:				u128,
-	import_datetime:	String,
+	import_datetime:	Option<NaiveDateTime>,
 	rating:				u32,
 	starred:			bool,
 }
@@ -50,7 +51,7 @@ impl Photo
 			id:					0,
 			filename:			String::from(""),
 			hash:				0,
-			import_datetime:	String::from(""),
+			import_datetime:	None,
 			rating:				0,
 			starred:			false,
 		}
@@ -72,6 +73,7 @@ impl Photo
 		}
 		self.filename = get_filename_from(photo_path);
 		self.hash = xxh3_128(&std::fs::read(photo_path)?);
+		self.import_datetime = Some(chrono::offset::Local::now().naive_local());
 		println!("import from file:\n{:#?}", &self);
 		Ok(())
 	}
@@ -81,8 +83,8 @@ impl ElementDatabase for Photo
 {
 	fn insert_into(&self, db: &Database) -> Result<u32, Error>
 	{
-		match db.connection.execute("INSERT INTO photos (filename, hash) VALUES (?1, ?2)",
-		(&self.filename, &self.hash.to_ne_bytes()))
+		match db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",
+		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime))
 		{
 			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
 			Err(_) => return Err(Error::Other)
