@@ -32,7 +32,7 @@ use std::path::Path;
 #[allow(dead_code)]
 pub struct Photo
 {
-	id:					u32,
+	pub id:					u32,
 	filename:			String,
 	hash:				u128,
 	import_datetime:	String,
@@ -84,7 +84,7 @@ impl ElementDatabase for Photo
 		match db.connection.execute("INSERT INTO photos (filename, hash) VALUES (?1, ?2)",
 		(&self.filename, &self.hash.to_ne_bytes()))
 		{
-			Ok(_) => Ok(1),
+			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
 			Err(_) => return Err(Error::Other)
 		}
 	}
@@ -99,6 +99,10 @@ impl ElementDatabase for Photo
 			self.id = row.get(0)?;
 			self.filename = row.get(1)?;
 			self.hash = u128::from_ne_bytes(row.get(2)?);
+		}
+		if self.id == 0
+		{
+			return Err(Error::NotFound);
 		}
 		Ok(())
 	}

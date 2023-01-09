@@ -173,9 +173,15 @@ impl Library
 		}
 		let mut photo = Photo::new();
 		photo.from_file(&self.db, photo_path)?;
-		self.db.insert(&photo)?;
+		self.db.insert(&photo)
 		//TODO: self.fs.add(&photo);
-		Ok(0)
+	}
+
+	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, Error>
+	{
+		let mut photo = Photo::new();
+		self.db.from_id(&mut photo, id)?;
+		Ok(photo)
 	}
 }
 
