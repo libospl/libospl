@@ -183,5 +183,12 @@ impl Library
 		self.db.from_id(&mut photo, id)?;
 		Ok(photo)
 	}
+
+	// a function deleting a photo from the library and the database
+	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
+	{
+		let photo = self.get_photo_from_id(id)?;
+		self.db.delete(&photo)
+	}
 }
 

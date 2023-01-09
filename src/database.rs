@@ -72,9 +72,14 @@ impl Database
 	{
 		object.insert_into(self)
 	}
-
+	/// Gets an element from the database with its id
 	pub(crate) fn from_id(&self, object: &mut dyn ElementDatabase, id: u32) -> Result<(), Error>
 	{
 		object.from_id(self, id)
+	}
+	/// Deletes an element f rom the database with its self.id
+	pub(crate) fn delete(&self, object: &dyn ElementDatabase) -> Result<(), Error>
+	{
+		object.delete(self)
 	}
 }
