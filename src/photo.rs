@@ -81,6 +81,16 @@ impl Photo
 
 impl ElementDatabase for Photo
 {
+	// function that deletes a photo from database with the id
+	fn delete(&self, db: &Database) -> Result<(), Error>
+	{
+		match db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])
+		{
+			Ok(_) => Ok(()),
+			Err(_) => return Err(Error::Other)
+		}
+	}
+
 	fn insert_into(&self, db: &Database) -> Result<u32, Error>
 	{
 		match db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",

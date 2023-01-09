@@ -85,4 +85,39 @@ mod tests
 		}
 		remove_test_path(path);
 	}
+
+	#[test]
+	fn delete_imported_photo()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+		library.import_photo("tests/files/test_photo.jpg").unwrap();
+		library.delete_photo_by_id(1).unwrap();
+		remove_test_path(path);
+	}
+
+	#[test]
+	fn delete_not_imported_photo()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+
+		library.init().unwrap();
+
+		match library.delete_photo_by_id(1)
+		{
+			Err(e) =>
+			{
+				if e != Error::NotFound
+				{
+					panic!("error: an other error as NotFound is returned")
+				}
+			}
+			Ok(_) => panic!("error: should not return Ok() with an unexisting id")
+		}
+		remove_test_path(path);
+	}
+
 }
