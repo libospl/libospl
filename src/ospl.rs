@@ -34,6 +34,8 @@ mod database;
 mod directory;
 mod utility;
 
+mod thumbnails;
+
 pub mod element;
 pub mod photo;
 
@@ -88,6 +90,21 @@ impl From<std::io::Error> for Error
 		{
 			ErrorKind::AlreadyExists => Error::Exists,
 			ErrorKind::PermissionDenied => Error::PermissionDenied,
+			_ => Error::Other,
+		}
+	}
+}
+
+impl From<image::ImageError> for Error
+{
+	fn from(error: image::ImageError) -> Self
+	{
+		match error
+		{
+			image::ImageError::Unsupported(_) => Error::NotSupported,
+			image::ImageError::IoError(_) => Error::Other,
+			image::ImageError::Decoding(_) => Error::NotAnImage,
+			image::ImageError::Limits(_) => Error::Other,
 			_ => Error::Other,
 		}
 	}
@@ -175,6 +192,9 @@ impl Library
 		photo.from_file(&self.db, photo_path)?;
 		self.db.insert(&photo)
 		//TODO: self.fs.add(&photo);
+		// once the filesystem is ready, and the photo is physically imported into
+		// the library, we can generate a thumbnail
+		//thumbnails::create_thumbnail_from_path(photo_path, "/tmp/test.jpg")?;
 	}
 
 	/// Get a Photo element from an id
