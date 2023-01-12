@@ -81,7 +81,6 @@ impl Photo
 
 impl ElementDatabase for Photo
 {
-	// function that deletes a photo from database with the id
 	fn delete(&self, db: &Database) -> Result<(), Error>
 	{
 		match db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])
