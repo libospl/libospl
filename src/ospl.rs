@@ -177,6 +177,17 @@ impl Library
 		//TODO: self.fs.add(&photo);
 	}
 
+	/// Get a Photo element from an id
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// library.init().unwrap();
+	/// library.import_photo("my_awesome_picture.jpg");
+	/// let photo = library.get_photo_from_id(1);
+	/// println!("Photo: {:?}", photo);
+	///
 	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, Error>
 	{
 		let mut photo = Photo::new();
@@ -184,7 +195,16 @@ impl Library
 		Ok(photo)
 	}
 
-	// a function deleting a photo from the library and the database
+	/// Deletes a photo with given id
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// library.init().unwrap();
+	/// library.import_photo("my_awesome_picture.jpg");
+	/// library.delete_photo_by_id(1);
+	///
 	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
 	{
 		let photo = self.get_photo_from_id(id)?;
