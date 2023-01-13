@@ -26,8 +26,10 @@ pub trait ElementDatabase
 {
 	/// Insert the element into the given database
 	fn insert_into(&self, db: &Database) -> Result<u32, Error>;
-	/// Fill the element with data from database
+
+	/// Fill the element with data from database. Not all will implement this trait, so there is a default.
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>;
+
 	/// Deletes the element from the database, the element must be loaded and have an id
 	fn delete(&self, db: &Database) -> Result<(), Error>;
 }

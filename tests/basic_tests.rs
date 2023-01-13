@@ -113,5 +113,19 @@ mod tests
 		assert!(std::path::Path::new(&(path.clone() + "/collections")).exists());
 		remove_test_path(path);
 	}
+
+	#[test]
+	fn create_collection()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let name = String::from("2022 Vacation");
+		let comment = String::from("Our 200 month vacation on Mars");
+
+		library.init().unwrap();
+		library.create_collection(name, comment).unwrap();
+		
+		remove_test_path(path);
+	}
 }
 

@@ -36,12 +36,14 @@ mod utility;
 
 pub mod element;
 pub mod photo;
+pub mod collection;
 
 use std::io::ErrorKind;
 
 use database::Database;
 use directory::Directory;
 use photo::Photo;
+use collection::Collection;
 
 #[derive(Debug, PartialEq)]
 pub enum Error
@@ -209,6 +211,18 @@ impl Library
 	{
 		let photo = self.get_photo_from_id(id)?;
 		self.db.delete(&photo)
+	}
+
+	/// Creates an album
+	/// 
+	/// TODO: Put in a example.
+	pub fn create_collection(self, name: String, comment: String) -> Result <Collection, Error>
+	{
+		// TODO: Create folder also.
+
+		let mut album = Collection::new(name, comment);
+		self.db.insert(&mut album)?;
+		Ok(album)
 	}
 }
 

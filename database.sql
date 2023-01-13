@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS albums (
 	id						INTEGER NOT NULL UNIQUE,
 	name					TEXT NOT NULL UNIQUE,
 	comment 				TEXT,
-	creation_datetime		TEXT,
+	creation_datetime		DATETIME,
 	modification_datetime	DATETIME,
 	collection				INTEGER,
 	FOREIGN KEY(collection) REFERENCES collections(id),
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS collections (
 	id						INTEGER NOT NULL UNIQUE,
 	name					TEXT NOT NULL UNIQUE,
 	comment					TEXT,
-	creation_datetime		TEXT,
+	creation_datetime		DATETIME,
 	modification_datetime	DATETIME,
 	PRIMARY KEY(id AUTOINCREMENT)
 );
