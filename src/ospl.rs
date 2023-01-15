@@ -171,11 +171,12 @@ impl Library
 		}
 		let mut photo = Photo::new();
 		photo.from_file(&self.db, photo_path)?;
-		self.db.insert(&photo)
-		//TODO: self.fs.add(&photo);
+		let id = self.db.insert(&photo)?;
+		self.fs.insert(&photo)?;
 		// once the filesystem is ready, and the photo is physically imported into
 		// the library, we can generate a thumbnail
 		//thumbnails::create_thumbnail_from_path(photo_path, "/tmp/test.jpg")?;
+		Ok(id)
 	}
 
 	/// Get a Photo element from an id

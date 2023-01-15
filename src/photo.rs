@@ -19,7 +19,9 @@
 */
 
 use crate::element::ElementDatabase;
+use crate::element::ElementFilesystem;
 use crate::Database;
+use crate::Filesystem;
 use crate::Error;
 use crate::utility;
 
@@ -39,8 +41,11 @@ pub struct Photo
 	import_datetime:	Option<NaiveDateTime>,
 	rating:				u32,
 	starred:			bool,
+
+	path_on_fs:			String,
 }
 
+// Constructors
 impl Photo
 {
 	/// Returns an empty Photo element
@@ -54,6 +59,9 @@ impl Photo
 			import_datetime:	None,
 			rating:				0,
 			starred:			false,
+
+			path_on_fs:			String::from(""),
+
 		}
 	}
 
@@ -74,8 +82,17 @@ impl Photo
 		self.filename = get_filename_from(photo_path);
 		self.hash = xxh3_128(&std::fs::read(photo_path)?);
 		self.import_datetime = Some(chrono::offset::Local::now().naive_local());
+		self.path_on_fs = String::from(photo_path);
 		println!("import from file:\n{:#?}", &self);
 		Ok(())
+	}
+}
+
+impl Photo
+{
+	pub fn get_time_formatted(&self) -> String
+	{
+		std::format!("{}", self.import_datetime.unwrap().format("%Y-%m-%d_%H-%M-%S-%f"))
 	}
 }
 
@@ -115,6 +132,15 @@ impl ElementDatabase for Photo
 		{
 			return Err(Error::NotFound);
 		}
+		Ok(())
+	}
+}
+
+impl ElementFilesystem for Photo
+{
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
+	{
+		std::fs::copy(&self.path_on_fs, fs.get_pictures_path() + &self.get_time_formatted() + "_" + &self.filename)?;
 		Ok(())
 	}
 }

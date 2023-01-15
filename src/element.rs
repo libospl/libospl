@@ -19,6 +19,7 @@
 */
 
 use crate::Database;
+use crate::Filesystem;
 use crate::Error;
 
 /// Trait related to database interactions
@@ -32,8 +33,8 @@ pub trait ElementDatabase
 	fn delete(&self, db: &Database) -> Result<(), Error>;
 }
 
-// /// Trait related to filesystem interactions
-// pub trait ElementFilesystem
-// {
-
-// }
+/// Trait related to filesystem interactions
+pub trait ElementFilesystem
+{
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>;
+}

@@ -20,11 +20,14 @@
 
 use crate::Directory;
 use crate::Error;
-// use crate::element::ElementFilesystem;
+use crate::element::ElementFilesystem;
 
 pub struct Filesystem
 {
 	pub path: String,
+	pictures_path: String,
+	thumbnails_path: String,
+	collections_path: String,
 }
 
 impl Filesystem
@@ -34,7 +37,10 @@ impl Filesystem
 	{
 		return Ok(Filesystem
 			{
-				path: path.to_owned() + "/",
+				path: path.to_owned(),
+				thumbnails_path: path.to_owned() + "/thumbnails",
+				pictures_path: path.to_owned() + "/pictures",
+				collections_path: path.to_owned() + "/collections",
 			});
 	}
 
@@ -42,18 +48,28 @@ impl Filesystem
 	pub(crate) fn create(path: &str) -> Result<Self, Error>
 	{
 		let fs = Self::new(path)?;
-		let thumbnails_path: String = fs.path.to_owned() + "/thumbnails";
-		let pictures_path: String = fs.path.to_owned() + "/pictures";
-		let collections_path: String = fs.path.to_owned() + "/collections";
 
-		Directory::from(&thumbnails_path)?.create()?;
-		Directory::from(&pictures_path)?.create()?;
-		Directory::from(&collections_path)?.create()?;
+		Directory::from(&fs.thumbnails_path)?.create()?;
+		Directory::from(&fs.pictures_path)?.create()?;
+		Directory::from(&fs.collections_path)?.create()?;
 		Ok(fs)
+	}
+
+
+}
+
+impl Filesystem
+{
+	pub fn get_pictures_path(&self) -> String
+	{
+		self.pictures_path.clone() + "/"
 	}
 }
 
 impl Filesystem
 {
-
+	pub(crate) fn insert(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
+	{
+		object.insert_into(self)
+	}
 }
