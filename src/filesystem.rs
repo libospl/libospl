@@ -18,22 +18,42 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::Database;
+use crate::Directory;
 use crate::Error;
+// use crate::element::ElementFilesystem;
 
-/// Trait related to database interactions
-pub trait ElementDatabase
+pub struct Filesystem
 {
-	/// Insert the element into the given database
-	fn insert_into(&self, db: &Database) -> Result<u32, Error>;
-	/// Fill the element with data from database
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>;
-	/// Deletes the element from the database, the element must be loaded and have an id
-	fn delete(&self, db: &Database) -> Result<(), Error>;
+	pub path: String,
 }
 
-// /// Trait related to filesystem interactions
-// pub trait ElementFilesystem
-// {
+impl Filesystem
+{
+	/// Creates a filesystem object, and returns it
+	pub(crate) fn new(path: &str) -> Result<Self, Error>
+	{
+		return Ok(Filesystem
+			{
+				path: path.to_owned() + "/",
+			});
+	}
 
-// }
+	/// Create the filesystem object and creates the main fs structure
+	pub(crate) fn create(path: &str) -> Result<Self, Error>
+	{
+		let fs = Self::new(path)?;
+		let thumbnails_path: String = fs.path.to_owned() + "/thumbnails";
+		let pictures_path: String = fs.path.to_owned() + "/pictures";
+		let collections_path: String = fs.path.to_owned() + "/collections";
+
+		Directory::from(&thumbnails_path)?.create()?;
+		Directory::from(&pictures_path)?.create()?;
+		Directory::from(&collections_path)?.create()?;
+		Ok(fs)
+	}
+}
+
+impl Filesystem
+{
+
+}

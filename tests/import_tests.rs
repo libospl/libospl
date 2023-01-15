@@ -41,8 +41,6 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		library.init().unwrap();
-
 		match library.import_photo("tests/files/test_photo.jpg")
 		{
 			Ok(_) => {},
@@ -56,8 +54,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-
-		library.init().unwrap();
 		assert_eq!(library.import_photo("tests/files/test_folder/").err().unwrap(), Error::IsADirectory);
 		remove_test_path(path);
 	}
@@ -67,8 +63,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-
-		library.init().unwrap();
 		assert_eq!(library.import_photo("tests/files/not_an_image.odt").err().unwrap(), Error::NotAnImage);
 		remove_test_path(path);
 	}
@@ -78,7 +72,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-		library.init().unwrap();
 		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotSupported);
 		remove_test_path(path);
 	}
@@ -88,9 +81,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-
-		library.init().unwrap();
-
 		assert_eq!(library.import_photo("").err().unwrap(), Error::NotFound);
 		remove_test_path(path);
 	}
@@ -100,7 +90,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-		library.init().unwrap();
 		#[cfg(all(unix))]
 		{
 			use std::os::unix::fs::PermissionsExt;

@@ -105,9 +105,8 @@ mod tests
 	fn library_init()
 	{
 		let path = generate_test_path();
-		let library = Library::create(&path).unwrap();
+		let _library = Library::create(&path).unwrap();
 
-		library.init().unwrap();
 		assert!(std::path::Path::new(&(path.clone() + "/thumbnails")).exists());
 		assert!(std::path::Path::new(&(path.clone() + "/pictures")).exists());
 		assert!(std::path::Path::new(&(path.clone() + "/collections")).exists());
