@@ -31,6 +31,7 @@ pub static VERSION_MINOR: &str = env!("CARGO_PKG_VERSION_MINOR");
 pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 
 mod database;
+mod filesystem;
 mod directory;
 mod utility;
 
@@ -42,6 +43,7 @@ pub mod photo;
 use std::io::ErrorKind;
 
 use database::Database;
+use filesystem::Filesystem;
 use directory::Directory;
 use photo::Photo;
 
@@ -114,7 +116,7 @@ pub struct Library
 {
 	pub path: String,
 	pub db: Database,
-	//TODO: pub fs: Filesystem,
+	pub fs: Filesystem,
 }
 
 impl Library
@@ -144,32 +146,12 @@ impl Library
 				Ok(Library
 				{
 					path: path.to_owned(),
-					db: Database::create(&path)?
+					db: Database::create(&path)?,
+					fs: Filesystem::create(&path)?,
 				})
 			},
 			Err(e) => Err(e),
 		}
-	}
-
-	/// Initializes the folders needed to import pictures, create collections and albums.
-	///
-	/// # Example
-	///
-	/// ```no_run
-	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
-	/// library.init().unwrap();
-	///
-	pub fn init(&self) -> Result <(), Error>
-	{
-		let thumbnails_path: String = self.path.to_owned() + "/thumbnails";
-		let pictures_path: String = self.path.to_owned() + "/pictures";
-		let collections_path: String = self.path.to_owned() + "/collections";
-
-		Directory::from(&thumbnails_path)?.create()?;
-		Directory::from(&pictures_path)?.create()?;
-		Directory::from(&collections_path)?.create()?;
-		Ok(())
 	}
 
 	/// Imports a photo into the photo library
@@ -179,7 +161,6 @@ impl Library
 	/// ```no_run
 	/// # use ospl::Library;
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
-	/// library.init().unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	///
 	pub fn import_photo(&self, photo_path: &str) -> Result<u32, Error>
@@ -203,7 +184,6 @@ impl Library
 	/// ```no_run
 	/// # use ospl::Library;
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
-	/// library.init().unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// let photo = library.get_photo_from_id(1);
 	/// println!("Photo: {:?}", photo);
@@ -221,7 +201,6 @@ impl Library
 	/// ```no_run
 	/// # use ospl::Library;
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
-	/// library.init().unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// library.delete_photo_by_id(1);
 	///

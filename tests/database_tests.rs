@@ -41,8 +41,6 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		library.init().unwrap();
-
 		match library.import_photo("tests/files/test_photo.jpg")
 		{
 			Ok(id) =>
@@ -69,8 +67,6 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		library.init().unwrap();
-
 		println!("{:#?}", library.get_photo_from_id(10));
 		match library.get_photo_from_id(1)
 		{
@@ -92,7 +88,6 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		library.init().unwrap();
 		library.import_photo("tests/files/test_photo.jpg").unwrap();
 		library.delete_photo_by_id(1).unwrap();
 		remove_test_path(path);
@@ -103,8 +98,6 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-
-		library.init().unwrap();
 
 		match library.delete_photo_by_id(1)
 		{
