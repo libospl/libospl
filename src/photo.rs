@@ -94,6 +94,11 @@ impl Photo
 	{
 		std::format!("{}", self.import_datetime.unwrap().format("%Y-%m-%d_%H-%M-%S-%f"))
 	}
+
+	pub fn get_filename(&self) -> String
+	{
+		String::from(self.get_time_formatted() + "_" + &self.filename)
+	}
 }
 
 impl ElementDatabase for Photo
