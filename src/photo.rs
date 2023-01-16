@@ -127,6 +127,7 @@ impl ElementDatabase for Photo
 			self.id = row.get(0)?;
 			self.filename = row.get(1)?;
 			self.hash = u128::from_ne_bytes(row.get(2)?);
+			self.import_datetime = row.get(4)?;
 		}
 		if self.id == 0
 		{
