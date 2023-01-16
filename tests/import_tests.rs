@@ -46,6 +46,11 @@ mod tests
 			Ok(_) => {},
 			Err(e) => panic!("error: importing not possible: {:?}", e)
 		}
+		let p = library.get_photo_from_id(1);
+		println!("imported photo: {:#?}", p);
+		let photo_path = path.clone() + "/pictures/" + &p.unwrap().get_filename();
+		println!("FULL_PATH: {}", photo_path.clone());
+		assert!(std::path::Path::new(&photo_path).exists());
 		remove_test_path(path);
 	}
 
