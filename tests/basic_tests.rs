@@ -58,8 +58,8 @@ mod tests
 		{
 			Ok(lib) =>
 			{
-				println!("check if {} == {}", lib.path, path);
-				assert_eq!(lib.path, path);
+				println!("check if {} == {}", lib.path.to_string_lossy(), path);
+				assert_eq!(lib.path.to_string_lossy(), path);
 			},
 			Err(e) => {panic!("{}: {:?}", LIBRARY_CREATE_ERROR, e)},
 		};

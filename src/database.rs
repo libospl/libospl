@@ -21,28 +21,29 @@ use super::DATABASE_FILENAME;
 use super::Error;
 use crate::element::ElementDatabase;
 
+use std::path::{Path, PathBuf};
 use rusqlite::{Connection};
 
 static DATABASE_SQL: &str = include_str!("../database.sql");
 
 pub struct Database
 {
-	pub path: String,
+	pub path: PathBuf,
 	pub connection: Connection,
 }
 
 impl Database
 {
 	/// Creates a database object, and returns it with a open connection
-	pub(crate) fn new(path: &str) -> Result<Self, Error>
+	pub(crate) fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
-		match Connection::open(path.to_owned() + "/" + DATABASE_FILENAME)
+		match Connection::open(path.as_ref().join(DATABASE_FILENAME))
 		{
 			Ok(c) =>
 			{
 				return Ok(Database
 				   {
-						path: path.to_owned() + "/" + DATABASE_FILENAME,
+						path: path.as_ref().join(DATABASE_FILENAME),
 						connection: c,
 				   });
 			}
@@ -51,7 +52,7 @@ impl Database
 	}
 
 	/// Create the database object and file, and inserts the main structure
-	pub(crate) fn create(path: &str) -> Result<Self, Error>
+	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		let db = Self::new(path)?;
 		match db.connection.execute_batch(DATABASE_SQL)

@@ -22,30 +22,32 @@ use crate::Directory;
 use crate::Error;
 use crate::element::ElementFilesystem;
 
+use std::path::{Path, PathBuf};
+
 pub struct Filesystem
 {
-	pub path: String,
-	pictures_path: String,
-	thumbnails_path: String,
-	collections_path: String,
+	pub path: PathBuf,
+	pictures_path: PathBuf,
+	thumbnails_path: PathBuf,
+	collections_path: PathBuf,
 }
 
 impl Filesystem
 {
 	/// Creates a filesystem object, and returns it
-	pub(crate) fn new(path: &str) -> Result<Self, Error>
+	pub(crate) fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		return Ok(Filesystem
 			{
-				path: path.to_owned(),
-				thumbnails_path: path.to_owned() + "/thumbnails",
-				pictures_path: path.to_owned() + "/pictures",
-				collections_path: path.to_owned() + "/collections",
+				path: path.as_ref().to_path_buf(),
+				thumbnails_path: path.as_ref().join("thumbnails"),
+				pictures_path: path.as_ref().join("pictures"),
+				collections_path: path.as_ref().join("collections"),
 			});
 	}
 
 	/// Create the filesystem object and creates the main fs structure
-	pub(crate) fn create(path: &str) -> Result<Self, Error>
+	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		let fs = Self::new(path)?;
 
@@ -60,9 +62,9 @@ impl Filesystem
 
 impl Filesystem
 {
-	pub fn get_pictures_path(&self) -> String
+	pub fn get_pictures_path(&self) -> PathBuf
 	{
-		self.pictures_path.clone() + "/"
+		self.pictures_path.to_path_buf()
 	}
 }
 
