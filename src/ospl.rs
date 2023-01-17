@@ -118,9 +118,9 @@ impl From<image::ImageError> for Error
 
 pub struct Library
 {
-	pub path: PathBuf,
-	pub db: Database,
-	pub fs: Filesystem,
+	path: PathBuf,
+	db: Database,
+	fs: Filesystem,
 }
 
 impl Library
@@ -216,3 +216,10 @@ impl Library
 	}
 }
 
+impl Library // Get functions
+{
+	pub fn get_path(&self) -> PathBuf
+	{
+		self.path.clone()
+	}
+}
