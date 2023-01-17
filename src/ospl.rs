@@ -41,6 +41,7 @@ pub mod element;
 pub mod photo;
 
 use std::io::ErrorKind;
+use std::path::{Path, PathBuf};
 
 use database::Database;
 use filesystem::Filesystem;
@@ -68,6 +69,7 @@ pub enum Error
 	IsADirectory,
 }
 
+#[cfg(not(tarpaulin_include))]
 impl From<rusqlite::Error> for Error
 {
 	fn from(error: rusqlite::Error) -> Self
@@ -84,6 +86,7 @@ impl From<rusqlite::Error> for Error
 	}
 }
 
+#[cfg(not(tarpaulin_include))]
 impl From<std::io::Error> for Error
 {
 	fn from(error: std::io::Error) -> Self
@@ -97,6 +100,7 @@ impl From<std::io::Error> for Error
 	}
 }
 
+#[cfg(not(tarpaulin_include))]
 impl From<image::ImageError> for Error
 {
 	fn from(error: image::ImageError) -> Self
@@ -114,7 +118,7 @@ impl From<image::ImageError> for Error
 
 pub struct Library
 {
-	pub path: String,
+	pub path: PathBuf,
 	pub db: Database,
 	pub fs: Filesystem,
 }
@@ -137,7 +141,7 @@ impl Library
 	/// };
 	///
 	///
-	pub fn create(path: &str) -> Result<Self, Error>
+	pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		match Directory::from(&path)?.create()
 		{
@@ -145,7 +149,7 @@ impl Library
 			{
 				Ok(Library
 				{
-					path: path.to_owned(),
+					path: path.as_ref().to_path_buf(),
 					db: Database::create(&path)?,
 					fs: Filesystem::create(&path)?,
 				})
@@ -163,14 +167,14 @@ impl Library
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	///
-	pub fn import_photo(&self, photo_path: &str) -> Result<u32, Error>
+	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, Error>
 	{
-		if !std::path::Path::new(photo_path).exists()
+		if !photo_path.as_ref().exists()
 		{
 			return Err(Error::NotFound);
 		}
 		let mut photo = Photo::new();
-		photo.from_file(&self.db, photo_path)?;
+		photo.from_file(&self.db, &photo_path)?;
 		let id = self.db.insert(&photo)?;
 		self.fs.insert(&photo)?;
 		// once the filesystem is ready, and the photo is physically imported into

@@ -19,6 +19,7 @@
 */
 use crate::Error;
 
+use std::path::Path;
 use image::imageops::thumbnail;
 
 // We should consider using a more efficient crate for creating thumbnails,
@@ -29,12 +30,15 @@ use image::imageops::thumbnail;
 
 
 #[allow(dead_code)]
-pub fn create_thumbnail_from_path(photo_path: &str, save_to: &str) -> Result<(), Error>
+pub fn create_thumbnail_from_path<P, Q>(photo_path: P, save_to: Q) -> Result<(), Error>
+where
+    P: AsRef<Path>,
+    Q: AsRef<Path>,
 {
-	let img = image::open(std::path::Path::new(photo_path))?;
+	let img = image::open(photo_path)?;
 	let new_height: u32 = 325;
 	let new_width: u32 = (img.width() * new_height) / img.height();
 	let img = thumbnail(&img, new_width, new_height);
-	img.save(std::path::Path::new(save_to))?;
+	img.save(save_to)?;
 	Ok(())
 }

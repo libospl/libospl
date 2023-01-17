@@ -22,22 +22,23 @@ use super::Error;
 use crate::utility;
 
 use std::fs;
+use std::path::{Path, PathBuf};
 
 #[cfg(all(unix))]
 use std::os::unix::fs::PermissionsExt;
 
 pub(crate) struct Directory
 {
-	path: String
+	path: PathBuf
 }
 
 impl Directory
 {
-	pub(crate) fn from(path: &str) -> Result<Self, Error>
+	pub(crate) fn from<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		Ok(Directory 
 		{
-			path: path.to_owned()
+			path: path.as_ref().to_path_buf()
 		})
 	}
 

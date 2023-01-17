@@ -28,7 +28,7 @@ use crate::utility;
 use chrono::naive::NaiveDateTime;
 use xxhash_rust::xxh3::xxh3_128;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Structure containing a replica of sqlite data
 #[derive(Debug)]
@@ -42,7 +42,7 @@ pub struct Photo
 	rating:				u32,
 	starred:			bool,
 
-	path_on_fs:			String,
+	path_on_fs:			PathBuf,
 }
 
 // Constructors
@@ -60,29 +60,28 @@ impl Photo
 			rating:				0,
 			starred:			false,
 
-			path_on_fs:			String::from(""),
-
+			path_on_fs:			Path::new("").to_path_buf(),
 		}
 	}
 
 	/// Gets data from an image file and fills self with basic data:
 	/// - filename
 	/// - hash
-	pub fn from_file(&mut self, _db: &Database, photo_path: &str)
+	pub fn from_file<P: AsRef<Path>>(&mut self, _db: &Database, photo_path: P)
 	-> Result <(), Error>
 	{
-		if Path::new(photo_path).is_dir()
+		if photo_path.as_ref().is_dir()
 		{
 			return Err(Error::IsADirectory);
 		}
-		if !is_photo(photo_path)?
+		if !is_photo(&photo_path)?
 		{
 			return Err(Error::NotAnImage);
 		}
-		self.filename = get_filename_from(photo_path);
-		self.hash = xxh3_128(&std::fs::read(photo_path)?);
+		self.filename = get_filename_from(&photo_path);
+		self.hash = xxh3_128(&std::fs::read(&photo_path)?);
 		self.import_datetime = Some(chrono::offset::Local::now().naive_local());
-		self.path_on_fs = String::from(photo_path);
+		self.path_on_fs = photo_path.as_ref().to_path_buf();
 		println!("import from file:\n{:#?}", &self);
 		Ok(())
 	}
@@ -146,13 +145,14 @@ impl ElementFilesystem for Photo
 {
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
 	{
-		std::fs::copy(&self.path_on_fs, fs.get_pictures_path() + &self.get_time_formatted() + "_" + &self.filename)?;
+		let new_filename = self.get_time_formatted() + "_" + &self.filename;
+		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(new_filename))?;
 		Ok(())
 	}
 }
 
 /// Checks if the file is an image
-fn is_photo(path: &str) -> Result<bool, Error>
+fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
 {
 	let kind = match infer::get_from_path(path)
 	{
@@ -173,9 +173,9 @@ fn is_photo(path: &str) -> Result<bool, Error>
 	Ok(false)
 }
 
-fn get_filename_from(path: &str) -> String
+fn get_filename_from<P: AsRef<Path>>(path: P) -> String
 {
-	Path::new(path)
+	path.as_ref()
 	.file_name()
 	.unwrap()
 	.to_str()
