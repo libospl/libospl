@@ -177,9 +177,7 @@ impl Library
 		photo.from_file(&self.db, &photo_path)?;
 		let id = self.db.insert(&photo)?;
 		self.fs.insert(&photo)?;
-		// once the filesystem is ready, and the photo is physically imported into
-		// the library, we can generate a thumbnail
-		//thumbnails::create_thumbnail_from_path(photo_path, "/tmp/test.jpg")?;
+		thumbnails::create_thumbnail_from_path(photo_path, self.fs.get_thumbnails_path().join(photo.get_filename()))?;
 		Ok(id)
 	}
 
