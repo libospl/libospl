@@ -66,6 +66,16 @@ impl Filesystem
 	{
 		self.pictures_path.to_path_buf()
 	}
+
+	pub fn get_thumbnails_path(&self) -> PathBuf
+	{
+		self.thumbnails_path.to_path_buf()
+	}
+
+	pub fn get_collections_path(&self) -> PathBuf
+	{
+		self.collections_path.to_path_buf()
+	}
 }
 
 impl Filesystem
