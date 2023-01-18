@@ -33,10 +33,7 @@ CREATE TABLE IF NOT EXISTS photos (
 	title					TEXT,
 	comment					TEXT,
 	-- Image position: TODO: Research this
-	-- Other
-	album					INTEGER,
 	-- Key configuration
-	FOREIGN KEY(album) REFERENCES albums(id),
 	PRIMARY KEY(id AUTOINCREMENT)
 );
 
@@ -45,19 +42,27 @@ CREATE TABLE IF NOT EXISTS albums (
 	id						INTEGER NOT NULL UNIQUE,
 	name					TEXT NOT NULL UNIQUE,
 	comment 				TEXT,
-	creation_datetime		TEXT,
+	creation_datetime		DATETIME,
 	modification_datetime	DATETIME,
 	collection				INTEGER,
 	FOREIGN KEY(collection) REFERENCES collections(id),
 	PRIMARY KEY(id AUTOINCREMENT)
 );
 
--- Table where each row represents a collection.
+-- Link table between photos and albums.
+CREATE TABLE IF NOT EXISTS photos_albums_map (
+	containing_album		INTEGER NOT NULL,
+	contained_photo			INTEGER NOT NULL,
+	FOREIGN KEY(contained_photo) REFERENCES photos(id),
+	FOREIGN KEY(containing_album) REFERENCES albums(id)
+);
+
+-- Table where each row represents a collection. (The Albums table references the Collection, not the other way around.)
 CREATE TABLE IF NOT EXISTS collections (
 	id						INTEGER NOT NULL UNIQUE,
 	name					TEXT NOT NULL UNIQUE,
 	comment					TEXT,
-	creation_datetime		TEXT,
+	creation_datetime		DATETIME,
 	modification_datetime	DATETIME,
 	PRIMARY KEY(id AUTOINCREMENT)
 );
