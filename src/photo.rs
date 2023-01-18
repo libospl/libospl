@@ -145,8 +145,7 @@ impl ElementFilesystem for Photo
 {
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
 	{
-		let new_filename = self.get_time_formatted() + "_" + &self.filename;
-		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(new_filename))?;
+		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(self.get_filename()))?;
 		Ok(())
 	}
 }
