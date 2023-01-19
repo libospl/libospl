@@ -51,6 +51,19 @@ mod tests
 	}
 
 	#[test]
+	fn create_collection()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+		match library.create_collection("2019", "Photos from 2019") {
+			Ok(_) => {},
+			Err(err) => {panic!("Error creating collection: {:?}", err)}
+		};
+		remove_test_path(path);
+	}
+
+
+	#[test]
 	fn library_path()
 	{
 		let path = generate_test_path();
