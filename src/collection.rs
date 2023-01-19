@@ -25,8 +25,6 @@ use crate::Filesystem;
 use crate::Error;
 
 use chrono::naive::NaiveDateTime;
-use std::path::PathBuf;
-use std::path::Path;
 
 /// Structure containing a replica of sqlite data
 #[derive(Debug)]
@@ -38,8 +36,6 @@ pub struct Collection
 	modification_datetime:	Option<NaiveDateTime>,
 	name:					String,
 	comment:				String,
-
-	path_on_fs:				PathBuf
 }
 
 // Constructors
@@ -55,8 +51,6 @@ impl Collection
 			modification_datetime:	Some(chrono::offset::Local::now().naive_local()),
 			name:					String::from(name),
 			comment:				String::from(comment),
-			
-			path_on_fs:				Path::new("").to_path_buf(),
 		}
 	}
 
@@ -118,8 +112,12 @@ impl ElementFilesystem for Collection
 {
 	fn create(&mut self, fs: &Filesystem) -> Result<(), Error>
 	{
-		self.path_on_fs = fs.get_collections_path().join(&self.name);
-		std::fs::create_dir(&self.path_on_fs)?;
+		let path = fs.get_collections_path().join(&self.name);
+		std::fs::create_dir(&path)?;
+		Ok(())
+	}
+	#[allow(unused_variables)]
+	fn insert_into (&self, fs: &Filesystem) -> Result<(), Error> {
 		Ok(())
 	}
 }
