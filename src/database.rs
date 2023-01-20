@@ -57,10 +57,7 @@ impl Database
 		let db = Self::new(path)?;
 		match db.connection.execute_batch(DATABASE_SQL)
 		{
-			Ok(_) =>
-			{
-				return Ok(db);
-			},
+			Ok(_) => { return Ok(db); },
 			Err(_why) => return Err(Error::Other)
 		}
 	}

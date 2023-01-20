@@ -19,7 +19,6 @@
 */
 
 use super::Error;
-use crate::utility;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -44,21 +43,15 @@ impl Directory
 
 	pub(crate) fn create(self) -> Result<(), Error>
 	{
-		match fs::create_dir(&self.path)
+		fs::create_dir(&self.path)?;
+		#[cfg(all(unix))]
 		{
-			Ok(_) =>
+			match fs::set_permissions(&self.path, fs::Permissions::from_mode(0o700))
 			{
-				#[cfg(all(unix))]
-				{
-					match fs::set_permissions(&self.path, fs::Permissions::from_mode(0o777))
-					{
-						Ok(_) => {},
-						Err(_) => {},
-					}
-				}
-				Ok(())
-			},
-			Err(why) => Err(utility::match_io_errorkind(why.kind()))
+				Ok(_) => {},
+				Err(_) => {},
+			}
 		}
+		Ok(())
 	}
 }

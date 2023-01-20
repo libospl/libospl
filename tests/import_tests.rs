@@ -80,7 +80,7 @@ mod tests
 	{
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotSupported);
+		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotAnImage);
 		remove_test_path(path);
 	}
 
