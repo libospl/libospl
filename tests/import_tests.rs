@@ -48,9 +48,12 @@ mod tests
 		}
 		let p = library.get_photo_from_id(1);
 		println!("imported photo: {:#?}", p);
-		let photo_path = path.clone() + "/pictures/" + &p.unwrap().get_filename();
+		let filename = p.unwrap().get_filename();
+		let photo_path = path.clone() + "/pictures/" + &filename;
+		let thumb_path = path.clone() + "/thumbnails/" + &filename;
 		println!("FULL_PATH: {}", photo_path.clone());
 		assert!(std::path::Path::new(&photo_path).exists());
+		assert!(std::path::Path::new(&thumb_path).exists());
 		remove_test_path(path);
 	}
 
