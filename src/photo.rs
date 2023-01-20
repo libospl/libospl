@@ -23,7 +23,6 @@ use crate::element::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
 use crate::Error;
-use crate::utility;
 
 use chrono::naive::NaiveDateTime;
 use xxhash_rust::xxh3::xxh3_128;
@@ -160,21 +159,16 @@ impl ElementFilesystem for Photo
 /// Checks if the file is an image
 fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
 {
-	let kind = match infer::get_from_path(path)
+	match infer::get_from_path(path)?
 	{
-		Ok(k) =>
+		Some(t) =>
 		{
-			match k // check the filetype
+			if t.matcher_type() == infer::MatcherType::Image
 			{
-				Some(ok) => ok.matcher_type(),
-				None => return Err(Error::NotSupported),
+				return Ok(true);
 			}
 		}
-		Err(e) => return Err(utility::match_io_errorkind(e.kind())),
-	};
-	if kind == infer::MatcherType::Image
-	{
-		return Ok(true);
+		None =>	{ return Err(Error::NotAnImage); }
 	}
 	Ok(false)
 }
