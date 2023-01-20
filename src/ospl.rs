@@ -67,6 +67,8 @@ pub enum Error
 	NotAnImage,
 	/// A directory was specified when a non-directory was expected.
 	IsADirectory,
+	/// An error related to io
+	IoError,
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -95,7 +97,11 @@ impl From<std::io::Error> for Error
 		{
 			ErrorKind::AlreadyExists => Error::Exists,
 			ErrorKind::PermissionDenied => Error::PermissionDenied,
-			_ => Error::Other,
+			e =>
+			{
+				println!("error: {}", e);
+				Error::IoError
+			},
 		}
 	}
 }
