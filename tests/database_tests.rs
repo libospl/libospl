@@ -41,7 +41,7 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		match library.import_photo("tests/files/test_photo.jpg")
+		match library.import_photo("tests/files/test_photo_light.jpg")
 		{
 			Ok(id) =>
 			{
@@ -88,7 +88,7 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		library.import_photo("tests/files/test_photo.jpg").unwrap();
+		library.import_photo("tests/files/test_photo_light.jpg").unwrap();
 		library.delete_photo_by_id(1).unwrap();
 		remove_test_path(path);
 	}

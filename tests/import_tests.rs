@@ -41,7 +41,7 @@ mod tests
 		let path = generate_test_path();
 		let library = Library::create(&path).unwrap();
 
-		match library.import_photo("tests/files/test_photo.jpg")
+		match library.import_photo("tests/files/test_photo_light.jpg")
 		{
 			Ok(_) => {},
 			Err(e) => panic!("error: importing not possible: {:?}", e)
