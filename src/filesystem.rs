@@ -84,4 +84,9 @@ impl Filesystem
 	{
 		object.insert_into(self)
 	}
+
+	pub(crate) fn remove(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
+	{
+		object.remove_from(self)
+	}
 }

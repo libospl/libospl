@@ -148,6 +148,13 @@ impl ElementFilesystem for Photo
 		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(self.get_filename()))?;
 		Ok(())
 	}
+
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
+	{
+		std::fs::remove_file(fs.get_pictures_path().join(self.get_filename()))?;
+		std::fs::remove_file(fs.get_thumbnails_path().join(self.get_filename()))?;
+		Ok(())
+	}
 }
 
 /// Checks if the file is an image

@@ -216,6 +216,7 @@ impl Library
 	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
 	{
 		let photo = self.get_photo_from_id(id)?;
+		self.fs.remove(&photo)?;
 		self.db.delete(&photo)
 	}
 }

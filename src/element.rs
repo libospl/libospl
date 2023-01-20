@@ -37,4 +37,5 @@ pub trait ElementDatabase
 pub trait ElementFilesystem
 {
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>;
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>;
 }
