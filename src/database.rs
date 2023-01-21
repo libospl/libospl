@@ -26,6 +26,7 @@ use rusqlite::{Connection};
 
 static DATABASE_SQL: &str = include_str!("../database.sql");
 
+/// The database structure manages the connection to the db and every db entry.
 pub struct Database
 {
 	pub path: PathBuf,
@@ -66,16 +67,24 @@ impl Database
 impl Database
 {
 	/// Inserts an element into the database
+	///
+	/// If db.insert(object) is called, it will call object.insert_into(database struct)
 	pub(crate) fn insert(&self, object: &dyn ElementDatabase) -> Result<u32, Error>
 	{
 		object.insert_into(self)
 	}
+
 	/// Gets an element from the database with its id
+	///
+	/// If db.from_id(object) is called, it will call object.from_id(database struct)
 	pub(crate) fn from_id(&self, object: &mut dyn ElementDatabase, id: u32) -> Result<(), Error>
 	{
 		object.from_id(self, id)
 	}
+
 	/// Deletes an element f rom the database with its self.id
+	///
+	/// If db.delete(object) is called, it will call object.delete(database struct)
 	pub(crate) fn delete(&self, object: &dyn ElementDatabase) -> Result<(), Error>
 	{
 		object.delete(self)

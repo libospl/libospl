@@ -28,8 +28,7 @@ use image::imageops::thumbnail;
 // However, currently, this is not a top priority as the primary goal is to
 // establish the basic functionality of the OSPL project.
 
-
-#[allow(dead_code)]
+/// creates a thumbnail of the photo and scales it down with an height of 325px
 pub fn create_thumbnail_from_path<P, Q>(photo_path: P, save_to: Q) -> Result<(), Error>
 where
     P: AsRef<Path>,

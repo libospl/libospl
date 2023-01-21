@@ -26,6 +26,7 @@ use std::path::{Path, PathBuf};
 #[cfg(all(unix))]
 use std::os::unix::fs::PermissionsExt;
 
+/// This structure will be removed do not use
 pub(crate) struct Directory
 {
 	path: PathBuf

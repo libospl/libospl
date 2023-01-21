@@ -222,6 +222,14 @@ impl Library
 
 impl Library // Get functions
 {
+	/// Get the path of where the library is located on disk
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/tmp/path.ospl/").unwrap();
+	/// assert_eq!(library.get_path().to_str().unwrap(), "/tmp/path.ospl/");
+	/// ```
 	pub fn get_path(&self) -> PathBuf
 	{
 		self.path.clone()
