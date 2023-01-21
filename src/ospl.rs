@@ -144,8 +144,7 @@ impl Library
 	/// 	Ok(_) => println!("Success!"),
 	/// 	Err(e) => println!("An error occured: {:?}", e),
 	/// };
-	///
-	///
+	///```
 	pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		match Directory::from(&path)?.create()
@@ -171,7 +170,7 @@ impl Library
 	/// # use ospl::Library;
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
-	///
+	///```
 	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, Error>
 	{
 		if !photo_path.as_ref().exists()
@@ -195,7 +194,7 @@ impl Library
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// let photo = library.get_photo_from_id(1);
 	/// println!("Photo: {:?}", photo);
-	///
+	///```
 	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, Error>
 	{
 		let mut photo = Photo::new();
@@ -211,7 +210,7 @@ impl Library
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// library.delete_photo_by_id(1);
-	///
+	///```
 	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
 	{
 		let photo = self.get_photo_from_id(id)?;
