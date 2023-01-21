@@ -66,12 +66,10 @@ impl Filesystem
 	{
 		self.pictures_path.to_path_buf()
 	}
-
 	pub fn get_thumbnails_path(&self) -> PathBuf
 	{
 		self.thumbnails_path.to_path_buf()
 	}
-
 	pub fn get_collections_path(&self) -> PathBuf
 	{
 		self.collections_path.to_path_buf()
@@ -83,5 +81,9 @@ impl Filesystem
 	pub(crate) fn insert(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
 	{
 		object.insert_into(self)
+	}
+	pub(crate) fn create_file(&self, object: &mut dyn ElementFilesystem) -> Result<(), Error>
+	{
+		object.create(self)
 	}
 }

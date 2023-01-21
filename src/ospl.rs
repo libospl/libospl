@@ -34,6 +34,7 @@ mod database;
 mod filesystem;
 mod directory;
 mod utility;
+mod collection;
 
 mod thumbnails;
 
@@ -47,6 +48,7 @@ use database::Database;
 use filesystem::Filesystem;
 use directory::Directory;
 use photo::Photo;
+use collection::Collection;
 
 #[derive(Debug, PartialEq)]
 pub enum Error
@@ -211,6 +213,21 @@ impl Library
 	{
 		let photo = self.get_photo_from_id(id)?;
 		self.db.delete(&photo)
+	}
+
+
+	/// Creates a collection
+	///
+	pub fn create_collection(&self, name: &str, comment: &str) -> Result<u32, Error>
+	{
+		// TODO: Add checking to see if the collection has not been created.
+
+		let mut collection = Collection::new(name, comment);
+
+		self.fs.create_file(&mut collection)?;
+		let id = self.db.insert(&collection)?;
+		self.fs.insert(&collection)?;
+		Ok(id)
 	}
 }
 

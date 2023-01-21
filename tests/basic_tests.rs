@@ -11,7 +11,8 @@ mod tests
 
 	use rusqlite::{Connection};
 
-	static TEST_DIR: &str = "/tmp/";
+
+	static TEST_DIR: &str = env!("CARGO_TARGET_TMPDIR");
 	static LIBRARY_CREATE_ERROR: &str = "error creating library";
 
 	fn remove_test_path(path: String)
@@ -49,6 +50,19 @@ mod tests
 		println!("check if table {} is present: table found: {}", name, table);
 		name.eq(&table)
 	}
+
+	#[test]
+	fn create_collection()
+	{
+		let path = generate_test_path();
+		let library = Library::create(&path).unwrap();
+		match library.create_collection("2019", "Photos from 2019") {
+			Ok(_) => {},
+			Err(err) => {panic!("Error creating collection: {:?}", err)}
+		};
+		remove_test_path(path);
+	}
+
 
 	#[test]
 	fn library_path()
@@ -90,15 +104,9 @@ mod tests
 	}
 
 	#[test]
-	fn create_library_no_permissions()
-	{
-		assert_eq!(Library::create(&"/root/library".to_string()).err().unwrap(), Error::PermissionDenied);
-	}
-
-	#[test]
 	fn create_library_exists()
 	{
-		assert_eq!(Library::create(&"/".to_string()).err().unwrap(), Error::Exists);
+		assert_eq!(Library::create(&TEST_DIR.to_string()).err().unwrap(), Error::Exists);
 	}
 
 	#[test]

@@ -149,6 +149,11 @@ impl ElementFilesystem for Photo
 		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(new_filename))?;
 		Ok(())
 	}
+	#[allow(unused_variables)]
+	fn create(&mut self, fs: &Filesystem) -> Result<(), Error>
+	{
+		Ok(())
+	}
 }
 
 /// Checks if the file is an image
