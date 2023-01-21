@@ -31,8 +31,8 @@ use image::imageops::thumbnail;
 /// creates a thumbnail of the photo and scales it down with an height of 325px
 pub fn create_thumbnail_from_path<P, Q>(photo_path: P, save_to: Q) -> Result<(), Error>
 where
-    P: AsRef<Path>,
-    Q: AsRef<Path>,
+	P: AsRef<Path>,
+	Q: AsRef<Path>,
 {
 	let img = image::open(photo_path)?;
 	let new_height: u32 = 325;
