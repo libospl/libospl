@@ -11,7 +11,8 @@ mod tests
 
 	use rusqlite::{Connection};
 
-	static TEST_DIR: &str = "/tmp/";
+
+	static TEST_DIR: &str = env!("CARGO_TARGET_TMPDIR");
 	static LIBRARY_CREATE_ERROR: &str = "error creating library";
 
 	fn remove_test_path(path: String)
@@ -103,6 +104,7 @@ mod tests
 	}
 
 	#[test]
+	#[cfg(target_os = "linux")]
 	fn create_library_no_permissions()
 	{
 		assert_eq!(Library::create(&"/root/library".to_string()).err().unwrap(), Error::PermissionDenied);
@@ -111,7 +113,7 @@ mod tests
 	#[test]
 	fn create_library_exists()
 	{
-		assert_eq!(Library::create(&"/".to_string()).err().unwrap(), Error::Exists);
+		assert_eq!(Library::create(&TEST_DIR.to_string()).err().unwrap(), Error::Exists);
 	}
 
 	#[test]
