@@ -90,11 +90,14 @@ impl Photo
 
 impl Photo // Private function only useful to the local functions
 {
-	pub fn get_time_formatted(&self) -> String
+	/// Get actual time formated specificly to be added in front of the photo filename
+	fn get_time_formatted(&self) -> String
 	{
 		std::format!("{}", self.import_datetime.unwrap().format("%Y-%m-%d_%H-%M-%S-%f"))
 	}
-
+}
+impl Photo // Public function to get information about the photo
+{
 	pub fn get_filename(&self) -> String
 	{
 		String::from(self.get_time_formatted() + "_" + &self.filename)
