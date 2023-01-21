@@ -36,6 +36,8 @@ pub trait ElementDatabase
 /// Trait related to filesystem interactions
 pub trait ElementFilesystem
 {
+	/// Inserts the element into the library filesystem
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>;
+	/// Removes the element from the library filesystem
 	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>;
 }

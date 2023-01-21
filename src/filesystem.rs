@@ -24,6 +24,7 @@ use crate::element::ElementFilesystem;
 
 use std::path::{Path, PathBuf};
 
+/// The Filesystem structure manages every file and directory in the library.
 pub struct Filesystem
 {
 	pub path: PathBuf,
@@ -62,16 +63,19 @@ impl Filesystem
 
 impl Filesystem
 {
+	/// Returns the path on filesystem to the pictures path in the library
 	pub fn get_pictures_path(&self) -> PathBuf
 	{
 		self.pictures_path.to_path_buf()
 	}
 
+	/// Returns the path on filesystem to the thumbnails path in the library
 	pub fn get_thumbnails_path(&self) -> PathBuf
 	{
 		self.thumbnails_path.to_path_buf()
 	}
 
+	/// Returns the path on filesystem to the collections path in the library
 	pub fn get_collections_path(&self) -> PathBuf
 	{
 		self.collections_path.to_path_buf()
@@ -80,11 +84,17 @@ impl Filesystem
 
 impl Filesystem
 {
+	/// Inserts the element into the library filesystem
+	///
+	/// If fs.insert(object) is called, it will call object.insert_into(Filesystem struct)
 	pub(crate) fn insert(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
 	{
 		object.insert_into(self)
 	}
 
+	/// Removes the element from the library filesystem
+	///
+	/// If fs.remove(object) is called, it will call object.remove_from(Filesystem struct)
 	pub(crate) fn remove(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
 	{
 		object.remove_from(self)

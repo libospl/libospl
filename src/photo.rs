@@ -86,7 +86,7 @@ impl Photo
 	}
 }
 
-impl Photo
+impl Photo // Private function only useful to the local functions
 {
 	pub fn get_time_formatted(&self) -> String
 	{
@@ -101,6 +101,7 @@ impl Photo
 
 impl ElementDatabase for Photo
 {
+	/// Deletes the photo from the database with its id
 	fn delete(&self, db: &Database) -> Result<(), Error>
 	{
 		match db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])
@@ -110,6 +111,7 @@ impl ElementDatabase for Photo
 		}
 	}
 
+	/// Insert a photo into the database, returns the id of it.
 	fn insert_into(&self, db: &Database) -> Result<u32, Error>
 	{
 		match db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",
@@ -120,9 +122,9 @@ impl ElementDatabase for Photo
 		}
 	}
 
+	/// loads the photo object with data from db with its id
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
 	{
-		// fill self with the photo table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM photos WHERE id = ?1")?;
 		let mut rows = stmt.query(&[&id])?;
 		while let Some(row) = rows.next()?
@@ -142,12 +144,16 @@ impl ElementDatabase for Photo
 
 impl ElementFilesystem for Photo
 {
+	/// Inserts a photo into the filesystem using `self.path_on_fs` variable
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
 	{
 		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(self.get_filename()))?;
 		Ok(())
 	}
 
+	/// Remove everything related to a photo from the filesystem.
+	///
+	/// this includes the thumbnail, and in the future every reference to it in the albums
 	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
 	{
 		std::fs::remove_file(fs.get_pictures_path().join(self.get_filename()))?;
@@ -173,6 +179,7 @@ fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
 	Ok(false)
 }
 
+/// Returns only the filename from a path
 fn get_filename_from<P: AsRef<Path>>(path: P) -> String
 {
 	path.as_ref()
