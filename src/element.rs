@@ -37,13 +37,7 @@ pub trait ElementDatabase
 pub trait ElementFilesystem
 {
 	// Trait for inserting an object from another part of of the filesystem.
-	#[allow(unused_variables)]
-	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error> {
-		Ok(())
-    }
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>;
 	// Trait for creating an object from scratch.
-	#[allow(unused_variables)]
-	fn create(&mut self, fs: &Filesystem) -> Result<(), Error> {
-		Ok(())
-    }
+	fn create(&mut self, fs: &Filesystem) -> Result<(), Error>;
 }

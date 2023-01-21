@@ -82,4 +82,8 @@ impl Filesystem
 	{
 		object.insert_into(self)
 	}
+	pub(crate) fn create_file(&self, object: &mut dyn ElementFilesystem) -> Result<(), Error>
+	{
+		object.create(self)
+	}
 }

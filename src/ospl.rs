@@ -45,7 +45,6 @@ use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
 use database::Database;
-use element::ElementFilesystem;
 use filesystem::Filesystem;
 use directory::Directory;
 use photo::Photo;
@@ -224,8 +223,8 @@ impl Library
 		// TODO: Add checking to see if the collection has not been created.
 
 		let mut collection = Collection::new(name, comment);
-		collection.create(&self.fs)?;
 
+		self.fs.create_file(&mut collection)?;
 		let id = self.db.insert(&collection)?;
 		self.fs.insert(&collection)?;
 		Ok(id)
