@@ -65,7 +65,9 @@ impl Photo
 
 	/// Gets data from an image file and fills self with basic data:
 	/// - filename
-	/// - hash
+	/// - hash using xxh algorithm
+	/// - import datetime
+	/// - the current path on the filesystem
 	pub fn from_file<P: AsRef<Path>>(&mut self, _db: &Database, photo_path: P)
 	-> Result <(), Error>
 	{
