@@ -33,6 +33,7 @@ pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 mod database;
 mod filesystem;
 mod directory;
+mod collection;
 
 mod thumbnails;
 
@@ -46,6 +47,7 @@ use database::Database;
 use filesystem::Filesystem;
 use directory::Directory;
 use photo::Photo;
+use collection::Collection;
 
 #[derive(Debug, PartialEq)]
 pub enum Error
@@ -217,6 +219,45 @@ impl Library
 		let photo = self.get_photo_from_id(id)?;
 		self.fs.remove(&photo)?;
 		self.db.delete(&photo)
+	}
+
+	/// Creates a collection
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	///	let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	///	match library.create_collection("2019", "Photos from 2019") {
+	///		Ok(_) => {},
+	///		Err(err) => {panic!("Error creating collection: {:?}", err)}
+	///	};
+	///
+	pub fn create_collection(&self, name: &str, comment: &str) -> Result<Collection, Error>
+	{
+		// TODO: Add checking to see if the collection has not been created.
+
+		let collection = Collection::new(name, comment);
+
+		self.db.insert(&collection)?;
+		self.fs.insert(&collection)?;
+		Ok(collection)
+	}
+
+	/// Get a Collection element from an id
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// library.import_photo("my_awesome_picture.jpg");
+	/// let photo = library.get_photo_from_id(1);
+	/// println!("Photo: {:?}", photo);
+	///
+	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>
+	{
+		let mut collection = Collection::new("", "");
+		self.db.from_id(&mut collection, id)?;
+		Ok(collection)
 	}
 }
 
