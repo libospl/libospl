@@ -40,7 +40,20 @@ pub struct Collection
 impl Collection
 {
 	/// Returns an empty Collection element
-	pub fn new(name: &str, comment: &str) -> Self
+	pub fn new() -> Self
+	{
+		Collection
+		{
+			id: 0,
+			creation_datetime: None,
+			modification_datetime: None,
+			name: String::from(""),
+			comment: String::from(""),
+		}
+	}
+
+	/// Returns a collection element filled with name and dates
+	pub fn new_with_name(name: &str, comment: &str) -> Self
 	{
 		Collection
 		{
