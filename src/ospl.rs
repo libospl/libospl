@@ -236,7 +236,7 @@ impl Library
 	{
 		// TODO: Add checking to see if the collection has not been created.
 
-		let collection = Collection::new(name, comment);
+		let collection = Collection::new_with_name(name, comment);
 
 		self.db.insert(&collection)?;
 		self.fs.insert(&collection)?;
@@ -255,7 +255,7 @@ impl Library
 	///
 	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>
 	{
-		let mut collection = Collection::new("", "");
+		let mut collection = Collection::new();
 		self.db.from_id(&mut collection, id)?;
 		Ok(collection)
 	}
