@@ -13,7 +13,7 @@ mod tests
 
 	//use rusqlite::{Connection};
 
-	static TEST_DIR: &str = "/tmp/";
+	static TEST_DIR: &str = env!("CARGO_TARGET_TMPDIR");
 
 	fn remove_test_path(path: String)
 	{
