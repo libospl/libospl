@@ -7,6 +7,7 @@ mod tests
 	use ospl::Error;
 	//use ospl::photo::Photo;
 
+	#[cfg(target_os = "linux")]
 	use std::fs;
 	use rand::{thread_rng, Rng};
 	use rand::distributions::Alphanumeric;
@@ -94,6 +95,7 @@ mod tests
 	}
 
 	#[test]
+	#[cfg(target_os = "linux")]
 	fn import_photo_permission_denied()
 	{
 		let path = generate_test_path();
