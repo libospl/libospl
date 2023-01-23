@@ -1,7 +1,24 @@
+version: 2.1
+orbs:
+    windows: circleci/windows@5
 jobs:
-  build:
+  build-linux:
     docker:
       - image: cimg/rust:1.65.0
     steps:
       - checkout
       - run: cargo test
+  build-windows:
+    executor: windows/default
+    steps:
+      - checkout
+      - run: choco install rust -y
+      - run: choco install mingw -y
+      - run: cargo test
+
+workflows:
+  version: 2
+  builds:
+    jobs:
+      - build-linux
+      - build-windows
