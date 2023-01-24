@@ -64,19 +64,19 @@ impl Filesystem
 impl Filesystem
 {
 	/// Returns the path on filesystem to the pictures path in the library
-	pub fn get_pictures_path(&self) -> PathBuf
+	pub fn pictures_path(&self) -> PathBuf
 	{
 		self.pictures_path.to_path_buf()
 	}
 
 	/// Returns the path on filesystem to the thumbnails path in the library
-	pub fn get_thumbnails_path(&self) -> PathBuf
+	pub fn thumbnails_path(&self) -> PathBuf
 	{
 		self.thumbnails_path.to_path_buf()
 	}
 
 	/// Returns the path on filesystem to the collections path in the library
-	pub fn get_collections_path(&self) -> PathBuf
+	pub fn collections_path(&self) -> PathBuf
 	{
 		self.collections_path.to_path_buf()
 	}
