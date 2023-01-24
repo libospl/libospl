@@ -74,8 +74,8 @@ mod tests
 		let comment = "Photos from 2019";
 		library.create_collection(name, comment).unwrap();
 		let collection = library.get_collection_from_id(1).unwrap();
-		assert_eq!(name, collection.get_name());
-		assert_eq!(comment, collection.get_comment());
+		assert_eq!(name, collection.name());
+		assert_eq!(comment, collection.comment());
 
 		remove_test_path(path);
 	}
