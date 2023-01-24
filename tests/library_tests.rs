@@ -32,7 +32,7 @@ mod tests
 			.take(30)
 			.map(char::from)
 			.collect();
-		TEST_DIR.to_string() + &rand_string + &LIBRARY_EXTENSION.to_string()
+		TEST_DIR.to_string() + "/" + &rand_string + &LIBRARY_EXTENSION.to_string()
 	}
 
 	fn check_table_presence(name: &str, db: &str) -> bool
