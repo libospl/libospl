@@ -28,6 +28,7 @@ use super::DATABASE_FILENAME;
 use std::path::{Path, PathBuf};
 
 /// The Filesystem structure manages every file and directory in the library.
+#[derive(Debug)]
 pub struct Filesystem
 {
 	root_path: PathBuf,

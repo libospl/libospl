@@ -27,6 +27,7 @@ use rusqlite::{Connection};
 static DATABASE_SQL: &str = include_str!("../database.sql");
 
 /// The database structure manages the connection to the db and every db entry.
+#[derive(Debug)]
 pub struct Database
 {
 	pub connection: Connection,

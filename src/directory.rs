@@ -27,6 +27,7 @@ use std::path::{Path, PathBuf};
 use std::os::unix::fs::PermissionsExt;
 
 /// This structure will be removed do not use
+#[derive(Debug)]
 pub(crate) struct Directory
 {
 	path: PathBuf

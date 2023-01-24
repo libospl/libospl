@@ -27,6 +27,7 @@ use crate::Error;
 use chrono::naive::NaiveDateTime;
 
 /// Structure containing a replica of sqlite data
+#[derive(Debug)]
 pub struct Collection
 {
 	pub id:					u32,
