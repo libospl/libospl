@@ -17,11 +17,11 @@
 	with this program; if not, write to the Free Software Foundation, Inc.,
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-use super::DATABASE_FILENAME;
+
 use super::Error;
 use crate::element::ElementDatabase;
 
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 use rusqlite::{Connection};
 
 static DATABASE_SQL: &str = include_str!("../database.sql");
@@ -29,7 +29,6 @@ static DATABASE_SQL: &str = include_str!("../database.sql");
 /// The database structure manages the connection to the db and every db entry.
 pub struct Database
 {
-	pub path: PathBuf,
 	pub connection: Connection,
 }
 
@@ -38,17 +37,16 @@ impl Database
 	/// Creates a database object, and returns it with a open connection
 	pub(crate) fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
-		match Connection::open(path.as_ref().join(DATABASE_FILENAME))
+		match Connection::open(path.as_ref())
 		{
 			Ok(c) =>
 			{
 				return Ok(Database
 				   {
-						path: path.as_ref().join(DATABASE_FILENAME),
 						connection: c,
 				   });
 			}
-			Err(_why) => return Err(Error::Other)
+			Err(why) => {log::warn!("error: {}", why); return Err(Error::Other)}
 		};
 	}
 
@@ -59,7 +57,7 @@ impl Database
 		match db.connection.execute_batch(DATABASE_SQL)
 		{
 			Ok(_) => { return Ok(db); },
-			Err(_why) => return Err(Error::Other)
+			Err(why) => { log::warn!("error: {}", why); return Err(Error::Other) }
 		}
 	}
 }

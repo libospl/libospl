@@ -14,6 +14,7 @@ rand = "0.8.5"
 infer = "0.11.0"
 chrono = "0.4.23"
 image = "0.24.5"
+log = "0.4.17"
 
 [dependencies.xxhash-rust]
 version = "0.8.6"

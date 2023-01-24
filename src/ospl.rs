@@ -49,6 +49,7 @@ use directory::Directory;
 use photo::Photo;
 use collection::Collection;
 
+
 #[derive(Debug, PartialEq)]
 pub enum Error
 {
@@ -125,8 +126,6 @@ impl From<image::ImageError> for Error
 
 pub struct Library
 {
-	path: PathBuf,
-	db: Database,
 	fs: Filesystem,
 }
 
@@ -155,9 +154,7 @@ impl Library
 			{
 				Ok(Library
 				{
-					path: path.as_ref().to_path_buf(),
-					db: Database::create(&path)?,
-					fs: Filesystem::create(&path)?,
+					fs: Filesystem::create(path)?,
 				})
 			},
 			Err(e) => Err(e),
@@ -175,13 +172,14 @@ impl Library
 	///```
 	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, Error>
 	{
+		let db = Database::new(self.fs.database_path())?;
 		if !photo_path.as_ref().exists()
 		{
 			return Err(Error::NotFound);
 		}
 		let mut photo = Photo::new();
-		photo.from_file(&self.db, &photo_path)?;
-		let id = self.db.insert(&photo)?;
+		photo.from_file(&db, &photo_path)?;
+		let id = db.insert(&photo)?;
 		self.fs.insert(&photo)?;
 		thumbnails::create_thumbnail_from_path(photo_path, self.fs.thumbnails_path().join(photo.get_filename()))?;
 		Ok(id)
@@ -199,8 +197,9 @@ impl Library
 	///```
 	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, Error>
 	{
+		let db = Database::new(self.fs.database_path())?;
 		let mut photo = Photo::new();
-		self.db.from_id(&mut photo, id)?;
+		db.from_id(&mut photo, id)?;
 		Ok(photo)
 	}
 
@@ -215,9 +214,10 @@ impl Library
 	///```
 	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
 	{
+		let db = Database::new(self.fs.database_path())?;
 		let photo = self.get_photo_from_id(id)?;
 		self.fs.remove(&photo)?;
-		self.db.delete(&photo)
+		db.delete(&photo)
 	}
 
 	/// Creates a collection
@@ -233,11 +233,12 @@ impl Library
 	///```
 	pub fn create_collection(&self, name: &str, comment: &str) -> Result<Collection, Error>
 	{
+		let db = Database::new(self.fs.database_path())?;
 		// TODO: Add checking to see if the collection has not been created.
 
 		let collection = Collection::new_with_name(name, comment);
 
-		self.db.insert(&collection)?;
+		db.insert(&collection)?;
 		self.fs.insert(&collection)?;
 		Ok(collection)
 	}
@@ -256,8 +257,9 @@ impl Library
 	///```
 	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>
 	{
+		let db = Database::new(self.fs.database_path())?;
 		let mut collection = Collection::new();
-		self.db.from_id(&mut collection, id)?;
+		db.from_id(&mut collection, id)?;
 		Ok(collection)
 	}
 }
@@ -274,6 +276,6 @@ impl Library // Get functions
 	/// ```
 	pub fn get_path(&self) -> PathBuf
 	{
-		self.path.clone()
+		self.fs.root_path()
 	}
 }
