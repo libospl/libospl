@@ -20,17 +20,21 @@
 
 use crate::Directory;
 use crate::Error;
+use crate::database::Database;
 use crate::element::ElementFilesystem;
+
+use super::DATABASE_FILENAME;
 
 use std::path::{Path, PathBuf};
 
 /// The Filesystem structure manages every file and directory in the library.
 pub struct Filesystem
 {
-	pub path: PathBuf,
+	root_path: PathBuf,
 	pictures_path: PathBuf,
 	thumbnails_path: PathBuf,
 	collections_path: PathBuf,
+	database_path:	PathBuf,
 }
 
 impl Filesystem
@@ -40,10 +44,11 @@ impl Filesystem
 	{
 		return Ok(Filesystem
 			{
-				path: path.as_ref().to_path_buf(),
+				root_path: path.as_ref().to_path_buf(),
 				thumbnails_path: path.as_ref().join("thumbnails"),
 				pictures_path: path.as_ref().join("pictures"),
 				collections_path: path.as_ref().join("collections"),
+				database_path: path.as_ref().join(DATABASE_FILENAME),
 			});
 	}
 
@@ -51,18 +56,22 @@ impl Filesystem
 	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		let fs = Self::new(path)?;
-
 		Directory::from(&fs.thumbnails_path)?.create()?;
 		Directory::from(&fs.pictures_path)?.create()?;
 		Directory::from(&fs.collections_path)?.create()?;
+		Database::create(&fs.database_path)?;
 		Ok(fs)
 	}
-
-
 }
 
 impl Filesystem
 {
+	/// Returns the path on filesystem of the library folder
+	pub fn root_path(&self) -> PathBuf
+	{
+		self.root_path.clone()
+	}
+
 	/// Returns the path on filesystem to the pictures path in the library
 	pub fn pictures_path(&self) -> PathBuf
 	{
@@ -79,6 +88,12 @@ impl Filesystem
 	pub fn collections_path(&self) -> PathBuf
 	{
 		self.collections_path.to_path_buf()
+	}
+
+	/// Returns the path on filesystem of the database file
+	pub fn database_path(&self) -> PathBuf
+	{
+		self.database_path.clone()
 	}
 }
 

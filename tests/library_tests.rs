@@ -55,6 +55,7 @@ mod tests
 	fn library_path()
 	{
 		let path = generate_test_path();
+		println!("creating library at {}", path);
 		let _library = match Library::create(&path)
 		{
 			Ok(lib) =>
