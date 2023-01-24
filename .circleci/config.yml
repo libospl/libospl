@@ -12,10 +12,18 @@ jobs:
     executor: windows/default
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - choco-cache-1
       - run: choco install rust -y
       - run: choco install mingw -y
+      - run: cargo fetch
+      - save_cache:
+          key: choco-cache-1
+          paths:
+            - C:\ProgramData\chocolatey\bin
+            - c:\programdata\chocolatey\lib
       - run: cargo test
-
 workflows:
   version: 2
   builds:
