@@ -49,7 +49,6 @@ use directory::Directory;
 use photo::Photo;
 use collection::Collection;
 
-
 #[derive(Debug, PartialEq)]
 pub enum Error
 {
@@ -123,7 +122,7 @@ impl From<image::ImageError> for Error
 		}
 	}
 }
-
+#[derive(Debug)]
 pub struct Library
 {
 	fs: Filesystem,
