@@ -250,8 +250,8 @@ impl Library
 	///	let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	///	library.create_collection("2019", "Photos from 2019").unwrap();
 	/// let collection = library.get_collection_from_id(1).unwrap();
-	/// assert_eq!("2019", collection.get_name());
-	/// assert_eq!("Photos from 2019", collection.get_comment());
+	/// assert_eq!("2019", collection.name());
+	/// assert_eq!("Photos from 2019", collection.comment());
 	/// assert_eq!(1, collection.id);
 	///```
 	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>

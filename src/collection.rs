@@ -65,12 +65,12 @@ impl Collection
 		}
 	}
 
-	pub fn get_name (&self) -> String
+	pub fn name (&self) -> String
 	{
 		self.name.clone()
 	}
 	
-	pub fn get_comment (&self) -> String
+	pub fn comment (&self) -> String
 	{
 		self.comment.clone()
 	}
