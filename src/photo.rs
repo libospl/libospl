@@ -152,7 +152,7 @@ impl ElementFilesystem for Photo
 	/// Inserts a photo into the filesystem using `self.path_on_fs` variable
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
 	{
-		std::fs::copy(&self.path_on_fs, fs.get_pictures_path().join(self.get_filename()))?;
+		std::fs::copy(&self.path_on_fs, fs.pictures_path().join(self.get_filename()))?;
 		Ok(())
 	}
 
@@ -161,8 +161,8 @@ impl ElementFilesystem for Photo
 	/// this includes the thumbnail, and in the future every reference to it in the albums
 	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
 	{
-		std::fs::remove_file(fs.get_pictures_path().join(self.get_filename()))?;
-		std::fs::remove_file(fs.get_thumbnails_path().join(self.get_filename()))?;
+		std::fs::remove_file(fs.pictures_path().join(self.get_filename()))?;
+		std::fs::remove_file(fs.thumbnails_path().join(self.get_filename()))?;
 		Ok(())
 	}
 }

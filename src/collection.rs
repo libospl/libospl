@@ -125,7 +125,7 @@ impl ElementFilesystem for Collection
 {
 	fn insert_into (&self, fs: &Filesystem) -> Result<(), Error> 
 	{
-		let path = fs.get_collections_path().join(&self.name);
+		let path = fs.collections_path().join(&self.name);
 		std::fs::create_dir(&path)?;
 		Ok(())
 	}

@@ -183,7 +183,7 @@ impl Library
 		photo.from_file(&self.db, &photo_path)?;
 		let id = self.db.insert(&photo)?;
 		self.fs.insert(&photo)?;
-		thumbnails::create_thumbnail_from_path(photo_path, self.fs.get_thumbnails_path().join(photo.get_filename()))?;
+		thumbnails::create_thumbnail_from_path(photo_path, self.fs.thumbnails_path().join(photo.get_filename()))?;
 		Ok(id)
 	}
 
