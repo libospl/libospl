@@ -8,6 +8,32 @@ jobs:
     steps:
       - checkout
       - run: cargo test
+  coverage:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Download rustup
+          command: |
+            wget https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
+            chmod +x rustup-init
+      - run:
+          name: Install Rust
+          command: |
+            ./rustup-init -y --no-modify-path --default-toolchain nightly
+            rm rustup-init
+            echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Install Tarpaulin
+          command: cargo install cargo-tarpaulin
+          environment:
+            RUSTFLAGS: --cfg procmacro2_semver_exempt
+      - run:
+          name: Generate coverage report
+          command: cargo tarpaulin --out Xml --all-features
+      - run: curl -Os https://uploader.codecov.io/latest/linux/codecov
+      - run: chmod +x codecov
+      - run: bash <(curl -s https://codecov.io/bash) -Z -f cobertura.xml
   build-windows:
     executor: windows/default
     steps:
@@ -30,3 +56,4 @@ workflows:
     jobs:
       - build-linux
       - build-windows
+      - coverage
