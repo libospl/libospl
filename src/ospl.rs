@@ -160,6 +160,25 @@ impl Library
 		}
 	}
 
+	/// Loads an existing ospl Library
+	/// 
+	/// # Example
+	/// ```
+	/// # use ospl::Library;
+	/// let library = match Library::load(&"/my/awesome/path.ospl/".to_string())
+	/// {
+	/// 	Ok(_) => println!("Success!"),
+	/// 	Err(e) => println!("An error occured: {:?}", e),
+	/// };
+	/// ```
+	pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, Error>
+	{	
+		Ok(Library
+		{
+			fs: Filesystem::new(path)?,
+		})
+	}
+
 	/// Imports a photo into the photo library
 	///
 	/// # Example

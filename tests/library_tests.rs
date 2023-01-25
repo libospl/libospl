@@ -117,4 +117,17 @@ mod tests
 		assert!(std::path::Path::new(&(path.join("collections"))).exists());
 		super::remove_test_path(path);
 	}
+
+	#[test]
+	fn library_load()
+	{
+		let path = super::generate_test_path();
+		let first_library = Library::create(&path).unwrap();
+		first_library.import_photo("tests/files/test_photo_light.jpg").unwrap();
+		let loaded_library = Library::load(&path).unwrap();
+
+		assert_eq!(first_library.get_path(), loaded_library.get_path());
+		loaded_library.get_photo_from_id(1).unwrap();
+		super::remove_test_path(path);
+	}
 }
