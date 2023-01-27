@@ -100,6 +100,11 @@ impl ElementDatabase for Collection
 		}
 	}
 
+	fn rename(&mut self, _db: &Database, _new_name: &str) -> Result<(), Error>
+	{
+		unimplemented!()
+	}
+
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
 	{
 		// fill self with the Collection table from the database with the id
@@ -134,5 +139,10 @@ impl ElementFilesystem for Collection
 	fn remove_from (&self, fs: &Filesystem) -> Result<(), Error>
 	{
 		Ok(std::fs::remove_dir_all(fs.collections_path())?)
+	}
+
+	fn rename(&mut self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
+	{
+		unimplemented!()
 	}
 }
