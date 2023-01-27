@@ -127,6 +127,12 @@ impl ElementDatabase for Photo
 		}
 	}
 
+	#[cfg(not(tarpaulin_include))]
+	fn rename(&mut self, _db: &Database, _new_name: &str) -> Result<(), Error>
+	{
+		unimplemented!()
+	}
+
 	/// loads the photo object with data from db with its id
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
 	{
@@ -164,6 +170,12 @@ impl ElementFilesystem for Photo
 		std::fs::remove_file(fs.pictures_path().join(self.get_filename()))?;
 		std::fs::remove_file(fs.thumbnails_path().join(self.get_filename()))?;
 		Ok(())
+	}
+
+	#[cfg(not(tarpaulin_include))]
+	fn rename(&mut self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
+	{
+		unimplemented!()
 	}
 }
 
