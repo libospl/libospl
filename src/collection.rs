@@ -131,8 +131,8 @@ impl ElementFilesystem for Collection
 		Ok(())
 	}
 
-	fn remove_from (&self, _fs: &Filesystem) -> Result<(), Error> 
+	fn remove_from (&self, fs: &Filesystem) -> Result<(), Error>
 	{
-		unimplemented!()
+		Ok(std::fs::remove_dir_all(fs.collections_path())?)
 	}
 }

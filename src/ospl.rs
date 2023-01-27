@@ -280,6 +280,23 @@ impl Library
 		db.from_id(&mut collection, id)?;
 		Ok(collection)
 	}
+
+	/// Deletes a collection with the given id
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let collection = library.create_collection("Vacations", "Best photos of my holidays").unwrap();
+	/// library.delete_collection_by_id(collection.id);
+	///```
+	pub fn delete_collection_by_id(&self, id: u32) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let collection = self.get_collection_from_id(id)?;
+		self.fs.remove(&collection)?;
+		db.delete(&collection)
+	}
 }
 
 impl Library // Get functions
