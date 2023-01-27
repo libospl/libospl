@@ -11,6 +11,7 @@
 - Manually add GPS tag
 - Export to other formats
 - Importing directly from connected mobile devices
+- Perceptual Hashing to detect duplicates that aren't exactly the same image format
 
 ### Performence improvements - line of research
 - Making hash algorithm faster (or choosing a faster one)
