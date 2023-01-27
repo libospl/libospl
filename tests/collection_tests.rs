@@ -50,9 +50,22 @@ mod tests
 		let comment = "Photos from 2019";
 		library.create_collection(name, comment).unwrap();
 		let collection = library.get_collection_from_id(1).unwrap();
+		assert!(std::path::Path::new(&library.get_path().join("collections").join(name)).exists());
 		assert_eq!(name, collection.name());
 		assert_eq!(comment, collection.comment());
 
+		super::remove_test_path(path);
+	}
+
+	#[test]
+	fn remove_collection()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		library.create_collection("name", "comment").unwrap();
+		assert!(std::path::Path::new(&library.get_path().join("collections").join("name")).exists());
+		library.delete_collection_by_id(1).unwrap();
+		assert!(!std::path::Path::new(&library.get_path().join("collections").join("name")).exists());
 		super::remove_test_path(path);
 	}
 }
