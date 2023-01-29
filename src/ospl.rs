@@ -282,6 +282,27 @@ impl Library
 		Ok(collection)
 	}
 
+	/// Rename a Collection element using its id
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let collection = library.create_collection("Bird", "Contains my best bird pics").unwrap();
+	/// assert_eq!("Bird", collection.name());
+	/// library.rename_collection_with_id(collection.id, "Birds").unwrap();
+	/// let collection = library.get_collection_from_id(collection.id).unwrap();
+	/// assert_eq!("Birds", collection.name());
+	/// ```
+	pub fn rename_collection_with_id(&self, id: u32, new_name: &str) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let collection = self.get_collection_from_id(id)?;
+		self.fs.rename(&collection, new_name)?;
+		db.rename(&collection, new_name)?;
+		Ok(())
+	}
+
 	/// Deletes a collection with the given id
 	///
 	/// # Example

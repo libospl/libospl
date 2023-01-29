@@ -100,9 +100,10 @@ impl ElementDatabase for Collection
 		}
 	}
 
-	fn rename(&mut self, _db: &Database, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>
 	{
-		unimplemented!()
+		db.connection.execute("UPDATE collections SET name = ?1 WHERE id = ?2", (new_name, &self.id))?;
+		Ok(())
 	}
 
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
@@ -141,8 +142,10 @@ impl ElementFilesystem for Collection
 		Ok(std::fs::remove_dir_all(fs.collections_path())?)
 	}
 
-	fn rename(&mut self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), Error>
 	{
-		unimplemented!()
+		let path_old = fs.collections_path().join(self.name());
+		let path_new = fs.collections_path().join(new_name);
+		Ok(std::fs::rename(path_old, path_new)?)
 	}
 }
