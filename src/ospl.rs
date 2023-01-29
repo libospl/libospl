@@ -254,9 +254,10 @@ impl Library
 		let db = Database::new(self.fs.database_path())?;
 		// TODO: Add checking to see if the collection has not been created.
 
-		let collection = Collection::new_with_name(name, comment);
+		let mut collection = Collection::new_with_name(name, comment);
 
-		db.insert(&collection)?;
+		let id = db.insert(&collection)?;
+		collection.id = id;
 		self.fs.insert(&collection)?;
 		Ok(collection)
 	}
