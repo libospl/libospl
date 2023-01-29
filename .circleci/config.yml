@@ -8,6 +8,12 @@ jobs:
     steps:
       - checkout
       - run: cargo test
+  build-release:
+    docker:
+      - image: cimg/rust:1.65.0
+    steps:
+      - checkout
+      - run: cargo test --release
   coverage:
     machine: true
     steps:
@@ -57,3 +63,4 @@ workflows:
       - build-linux
       - build-windows
       - coverage
+      - build-release
