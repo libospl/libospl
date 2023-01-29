@@ -33,12 +33,12 @@ pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 mod database;
 mod filesystem;
 mod directory;
-mod collection;
 
 mod thumbnails;
 
 pub mod element;
 pub mod photo;
+pub mod collection;
 
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
