@@ -128,7 +128,7 @@ impl ElementDatabase for Photo
 	}
 
 	#[cfg(not(tarpaulin_include))]
-	fn rename(&mut self, _db: &Database, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, _db: &Database, _new_name: &str) -> Result<(), Error>
 	{
 		unimplemented!()
 	}
@@ -173,7 +173,7 @@ impl ElementFilesystem for Photo
 	}
 
 	#[cfg(not(tarpaulin_include))]
-	fn rename(&mut self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
 	{
 		unimplemented!()
 	}

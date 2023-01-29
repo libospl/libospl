@@ -32,7 +32,7 @@ pub trait ElementDatabase
 	/// Deletes the element from the database, the element must be loaded and have an id
 	fn delete(&self, db: &Database) -> Result<(), Error>;
 	/// Rename the element in the database
-	fn rename(&mut self, db: &Database, new_name: &str) -> Result<(), Error>;
+	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>;
 }
 
 /// Trait related to filesystem interactions
@@ -43,5 +43,5 @@ pub trait ElementFilesystem
 	/// Removes the element from the library filesystem
 	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>;
 	/// Rename the element on the library filesystem
-	fn rename(&mut self, fs: &Filesystem, new_name: &str) -> Result<(), Error>;
+	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), Error>;
 }

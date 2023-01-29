@@ -108,6 +108,14 @@ impl Filesystem
 		object.insert_into(self)
 	}
 
+	/// Rename the element in the library filesystem
+	///
+	/// If fs.rename(object) is called it will call object.rename(Filesystem struct)
+	pub(crate) fn rename(&self, object: &dyn ElementFilesystem, new_name: &str) -> Result<(), Error>
+	{
+		object.rename(self, new_name)
+	}
+
 	/// Removes the element from the library filesystem
 	///
 	/// If fs.remove(object) is called, it will call object.remove_from(Filesystem struct)

@@ -81,6 +81,14 @@ impl Database
 		object.from_id(self, id)
 	}
 
+	/// Rename the element in the database
+	///
+	/// If db.rename(object) is called it will call object.rename(database struct)
+	pub(crate) fn rename(&self, object: &dyn ElementDatabase, new_name: &str) -> Result<(), Error>
+	{
+		object.rename(self, new_name)
+	}
+
 	/// Deletes an element f rom the database with its self.id
 	///
 	/// If db.delete(object) is called, it will call object.delete(database struct)
