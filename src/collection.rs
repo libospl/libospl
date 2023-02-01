@@ -1,6 +1,6 @@
-/*	libospl - Open Source Collection Library
-	an opensource and multiplateform Collection library management that can be used
-	to store and sort all your Collections.
+/*	libospl - Open Source Photo Library
+	an opensource and multiplateform Photo library management that can be used
+	to store and sort all your Photos.
 	Copyright (C) 2019-2022 Angelo Frangione
 
 	This program is free software; you can redistribute it and/or modify
