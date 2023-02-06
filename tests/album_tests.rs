@@ -95,4 +95,24 @@ mod tests
 		assert!(!std::path::Path::new(&library.get_path().join("collections").join("2018").join("Pizza Party")).exists());
 		super::remove_test_path(path);
 	}
+	#[test]
+	fn album_empty_comment()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
+		let album = library.create_album("Pizza Party", "", collection.id()).unwrap();
+		assert_eq!(album.comment(), "");
+		super::remove_test_path(path);
+	}
+	#[test]
+	fn album_empty_name()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
+		let album = library.create_album("", "", collection.id());
+		assert_eq!(album.err().unwrap(), Error::Empty);
+		super::remove_test_path(path);
+	}
 }
