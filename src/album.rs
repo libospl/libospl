@@ -95,6 +95,11 @@ impl Album
 	{
 		self.comment.clone()
 	}
+
+	pub fn collection_id(&self) -> u32
+	{
+		self.collection.id()
+	}
 }
 
 // Internal helpers
