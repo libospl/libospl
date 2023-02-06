@@ -16,7 +16,7 @@ mod tests
 		match library.create_collection("2019", "Photos from 2019") {
 			Ok(collection) =>
 			{
-				assert_eq!(1, collection.id);
+				assert_eq!(1, collection.id());
 				assert_eq!("2019", collection.name());
 				assert_eq!("Photos from 2019", collection.comment());
 			},
@@ -56,7 +56,7 @@ mod tests
 		library.create_collection(name, comment).unwrap();
 		let collection = library.get_collection_from_id(1).unwrap();
 		assert!(std::path::Path::new(&library.get_path().join("collections").join(name)).exists());
-		assert_eq!(1, collection.id);
+		assert_eq!(1, collection.id());
 		assert_eq!(name, collection.name());
 		assert_eq!(comment, collection.comment());
 
@@ -70,8 +70,8 @@ mod tests
 		let library = Library::create(&path).unwrap();
 		let collection = library.create_collection("Bird", "Contains my best bird pics").unwrap();
 		assert_eq!("Bird", collection.name());
-		library.rename_collection_with_id(collection.id, "Birds").unwrap();
-		let collection = library.get_collection_from_id(collection.id).unwrap();
+		library.rename_collection_with_id(collection.id(), "Birds").unwrap();
+		let collection = library.get_collection_from_id(collection.id()).unwrap();
 		assert_eq!("Birds", collection.name());
 		assert!(std::path::Path::new(&library.get_path().join("collections").join("Birds")).exists());
 		assert!(!std::path::Path::new(&library.get_path().join("collections").join("Bird")).exists());

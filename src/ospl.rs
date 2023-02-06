@@ -257,7 +257,7 @@ impl Library
 		let mut collection = Collection::new_with_name(name, comment);
 
 		let id = db.insert(&collection)?;
-		collection.id = id;
+		collection.set_id(id);
 		self.fs.insert(&collection)?;
 		Ok(collection)
 	}
@@ -272,7 +272,7 @@ impl Library
 	/// let collection = library.get_collection_from_id(1).unwrap();
 	/// assert_eq!("2019", collection.name());
 	/// assert_eq!("Photos from 2019", collection.comment());
-	/// assert_eq!(1, collection.id);
+	/// assert_eq!(1, collection.id());
 	///```
 	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>
 	{
@@ -290,8 +290,8 @@ impl Library
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// let collection = library.create_collection("Bird", "Contains my best bird pics").unwrap();
 	/// assert_eq!("Bird", collection.name());
-	/// library.rename_collection_with_id(collection.id, "Birds").unwrap();
-	/// let collection = library.get_collection_from_id(collection.id).unwrap();
+	/// library.rename_collection_with_id(collection.id(), "Birds").unwrap();
+	/// let collection = library.get_collection_from_id(collection.id()).unwrap();
 	/// assert_eq!("Birds", collection.name());
 	/// ```
 	pub fn rename_collection_with_id(&self, id: u32, new_name: &str) -> Result<(), Error>
@@ -310,7 +310,7 @@ impl Library
 	/// # use ospl::Library;
 	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
 	/// let collection = library.create_collection("Vacations", "Best photos of my holidays").unwrap();
-	/// library.delete_collection_by_id(collection.id);
+	/// library.delete_collection_by_id(collection.id());
 	///```
 	pub fn delete_collection_by_id(&self, id: u32) -> Result<(), Error>
 	{

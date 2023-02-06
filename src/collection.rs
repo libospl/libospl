@@ -30,7 +30,7 @@ use chrono::naive::NaiveDateTime;
 #[derive(Debug)]
 pub struct Collection
 {
-	pub id:					u32,
+	id:					u32,
 	creation_datetime:		Option<NaiveDateTime>,
 	modification_datetime:	Option<NaiveDateTime>,
 	name:					String,
@@ -64,6 +64,16 @@ impl Collection
 			name:					String::from(name),
 			comment:				String::from(comment),
 		}
+	}
+
+	pub fn set_id (&mut self, id: u32)
+	{
+		self.id = id;
+	}
+
+	pub fn id (&self) -> u32
+	{
+		self.id
 	}
 
 	pub fn name (&self) -> String
