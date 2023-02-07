@@ -39,10 +39,12 @@ mod thumbnails;
 pub mod element;
 pub mod photo;
 pub mod collection;
+pub mod album;
 
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
+use album::Album;
 use database::Database;
 use filesystem::Filesystem;
 use directory::Directory;
@@ -319,6 +321,54 @@ impl Library
 		self.fs.remove(&collection)?;
 		db.delete(&collection)
 	}
+
+	pub fn create_album(&self, name: &str, comment: &str, collection: u32) -> Result<Album, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+
+		let collection = self.get_collection_from_id(collection)?;
+		let mut album = Album::new_with_name(name, comment, collection);
+		let id = db.insert(&album)?;
+		album.set_id(id);
+		self.fs.insert(&album)?;
+		Ok(album)
+	}
+
+	pub fn get_album_from_id(&self, id: u32) -> Result<Album, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let mut album = Album::new();
+		db.from_id(&mut album, id)?;
+		Ok(album)
+	}
+
+	pub fn rename_album_with_id(&self, id: u32, new_name: &str) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(id)?;
+		self.fs.rename(&album, new_name)?;
+		db.rename(&album, new_name)?;
+		Ok(())
+	}
+
+	pub fn move_album_by_id(&self, album_id: u32, collection_id: u32) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(album_id)?;
+		let collection = self.get_collection_from_id(collection_id)?;
+		album.move_to(&self.fs, &collection)?;
+		album.assign_to(&db, &collection)?;
+		Ok(())
+	}
+
+	pub fn delete_album_by_id(&self, id: u32) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(id)?;
+		self.fs.remove(&album)?;
+		db.delete(&album)
+	}
+
 }
 
 impl Library // Get functions
