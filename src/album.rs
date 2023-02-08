@@ -19,6 +19,7 @@
 */
 
 use crate::collection::Collection;
+use crate::photo::Photo;
 use crate::element::ElementDatabase;
 use crate::element::ElementFilesystem;
 use crate::Database;
@@ -197,6 +198,20 @@ impl Album
 		let path_new = fs.collections_path().join(collection.name()).join(self.name());
 		Ok(std::fs::rename(path_old, path_new)?)
 	}
+
+	pub fn add(&self, fs: &Filesystem, photo: &Photo) -> Result<(), Error>
+	{
+		let photo_path = fs.pictures_path().join(photo.get_filename());
+		let link_path = fs.collections_path()
+									.join(self.collection.name())
+									.join(self.name())
+									.join(photo.get_filename());
+		if !link_path.exists()
+		{
+			std::fs::hard_link(photo_path, link_path)?;
+		}
+		Ok(())
+	}
 }
 
 // Specific Database functions
@@ -209,6 +224,13 @@ impl Album
 			warn!("This album (id:{}) is already assigned to this collection(id:{})", self.id, self.collection.id());
 		}
 		db.connection.execute("UPDATE albums SET collection = ?1 WHERE id = ?2", (collection.id(), &self.id))?;
+		Ok(())
+	}
+
+	pub fn put(&self, db: &Database, photo: &Photo) -> Result<(), Error>
+	{
+		db.connection.execute("INSERT INTO photos_albums_map (containing_album, contained_photo) VALUES (?1, ?2)",
+		(self.id(), photo.id))?;
 		Ok(())
 	}
 }
