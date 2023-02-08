@@ -88,6 +88,19 @@ impl Photo
 	}
 }
 
+impl Photo
+{
+	pub fn id(&self) -> u32
+	{
+		self.id
+	}
+
+	pub fn filename(&self) -> String
+	{
+		self.filename.clone()
+	}
+}
+
 impl Photo // Private function only useful to the local functions
 {
 	/// Get actual time formated specificly to be added in front of the photo filename

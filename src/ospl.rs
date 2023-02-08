@@ -432,6 +432,24 @@ impl Library
 		db.delete(&album)
 	}
 
+	/// Assign a photo to an album
+	///
+	/// # Example
+	/// ```no_run
+	/// use ospl::{Library, Error};
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let album = library.get_album_from_id(35).unwrap();
+	/// library.assign_photo_to_album(27, album.id());
+	/// ```
+	pub fn assign_photo_to_album(&self, photo: u32, album: u32) -> Result<(), Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(album)?;
+		let photo = self.get_photo_from_id(photo)?;
+		album.put(&db, &photo)?;
+		album.add(&self.fs, &photo)?;
+		Ok(())
+	}
 }
 
 impl Library // Get functions
