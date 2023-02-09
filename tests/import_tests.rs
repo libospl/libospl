@@ -22,9 +22,10 @@ mod tests
 			Ok(_) => {},
 			Err(e) => panic!("error: importing not possible: {:?}", e)
 		}
-		let p = library.get_photo_from_id(1);
+		let p = library.get_photo_from_id(1).unwrap();
 		println!("imported photo: {:#?}", p);
-		let filename = p.unwrap().get_filename();
+		let filename = p.get_filename();
+		assert_eq!("test_photo_light.jpg", p.filename());
 		let photo_path = path.join("pictures").join(&filename);
 		let thumb_path = path.join("thumbnails").join(&filename);
 		println!("FULL_PATH: {:?}", photo_path);
