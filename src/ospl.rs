@@ -143,7 +143,7 @@ impl Library
 	///
 	/// ```
 	/// # use ospl::Library;
-	/// let library = match Library::create(&"/my/awesome/path.ospl/".to_string())
+	/// let library = match Library::create("/my/awesome/path.ospl/")
 	/// {
 	/// 	Ok(_) => println!("Success!"),
 	/// 	Err(e) => println!("An error occured: {:?}", e),
@@ -169,7 +169,7 @@ impl Library
 	/// # Example
 	/// ```
 	/// # use ospl::Library;
-	/// let library = match Library::load(&"/my/awesome/path.ospl/".to_string())
+	/// let library = match Library::load("/my/awesome/path.ospl/")
 	/// {
 	/// 	Ok(_) => println!("Success!"),
 	/// 	Err(e) => println!("An error occured: {:?}", e),
@@ -189,7 +189,7 @@ impl Library
 	///
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	///```
 	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, Error>
@@ -212,7 +212,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// let photo = library.get_photo_from_id(1);
 	/// println!("Photo: {:?}", photo);
@@ -230,7 +230,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// library.delete_photo_by_id(1);
 	///```
@@ -247,7 +247,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	///	let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	///	let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	///	match library.create_collection("2019", "Photos from 2019") {
 	///		Ok(_) => {},
 	///		Err(err) => {panic!("Error creating collection: {:?}", err)}
@@ -271,7 +271,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	///	let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	///	let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	///	library.create_collection("2019", "Photos from 2019").unwrap();
 	/// let collection = library.get_collection_from_id(1).unwrap();
 	/// assert_eq!("2019", collection.name());
@@ -291,7 +291,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// let collection = library.create_collection("Bird", "Contains my best bird pics").unwrap();
 	/// assert_eq!("Bird", collection.name());
 	/// library.rename_collection_with_id(collection.id(), "Birds").unwrap();
@@ -312,7 +312,7 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/my/awesome/path.ospl/".to_string()).unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// let collection = library.create_collection("Vacations", "Best photos of my holidays").unwrap();
 	/// library.delete_collection_by_id(collection.id());
 	///```
@@ -459,7 +459,7 @@ impl Library // Get functions
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	/// let library = Library::create(&"/tmp/path.ospl/").unwrap();
+	/// let library = Library::create("/tmp/path.ospl/").unwrap();
 	/// assert_eq!(library.get_path().to_str().unwrap(), "/tmp/path.ospl/");
 	/// ```
 	pub fn get_path(&self) -> PathBuf
