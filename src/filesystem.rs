@@ -18,7 +18,6 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::Directory;
 use crate::Error;
 use crate::database::Database;
 use crate::element::ElementFilesystem;
@@ -57,9 +56,9 @@ impl Filesystem
 	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
 		let fs = Self::new(path)?;
-		Directory::from(&fs.thumbnails_path)?.create()?;
-		Directory::from(&fs.pictures_path)?.create()?;
-		Directory::from(&fs.collections_path)?.create()?;
+		std::fs::create_dir(&fs.thumbnails_path)?;
+		std::fs::create_dir(&fs.pictures_path)?;
+		std::fs::create_dir(&fs.collections_path)?;
 		Database::create(&fs.database_path)?;
 		Ok(fs)
 	}
