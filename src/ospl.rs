@@ -165,7 +165,7 @@ impl Library
 	}
 
 	/// Loads an existing ospl Library
-	/// 
+	///
 	/// # Example
 	/// ```
 	/// # use ospl::Library;
@@ -325,7 +325,7 @@ impl Library
 	}
 
 	/// Creates an album with provided name, comment and collection id
-	/// 
+	///
 	/// # Example
 	/// ```no_run
 	/// use ospl::Library;
@@ -350,7 +350,7 @@ impl Library
 	}
 
 	/// Get an Album element with its id
-	/// 
+	///
 	/// # Example
 	/// ```no_run
 	/// use ospl::Library;
@@ -370,7 +370,7 @@ impl Library
 	}
 
 	/// Rename an album
-	/// 
+	///
 	/// # Example
 	/// ```no_run
 	/// use ospl::Library;
@@ -391,7 +391,7 @@ impl Library
 	}
 
 	/// Move an album from the current collection to another one with it's id
-	/// 
+	///
 	/// # Example
 	/// ```no_run
 	/// use ospl::Library;
@@ -415,7 +415,7 @@ impl Library
 	}
 
 	/// Delete an album with its id
-	/// 
+	///
 	/// # Example
 	/// ```no_run
 	/// use ospl::{Library, Error};
