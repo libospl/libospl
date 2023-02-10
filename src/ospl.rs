@@ -32,7 +32,6 @@ pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 
 mod database;
 mod filesystem;
-mod directory;
 
 mod thumbnails;
 
@@ -47,7 +46,6 @@ use std::path::{Path, PathBuf};
 use album::Album;
 use database::Database;
 use filesystem::Filesystem;
-use directory::Directory;
 use photo::Photo;
 use collection::Collection;
 
@@ -151,7 +149,7 @@ impl Library
 	///```
 	pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
 	{
-		match Directory::from(&path)?.create()
+		match std::fs::create_dir(&path)
 		{
 			Ok(_) =>
 			{
@@ -160,7 +158,11 @@ impl Library
 					fs: Filesystem::create(path)?,
 				})
 			},
-			Err(e) => Err(e),
+			Err(e) =>
+			{
+				log::warn!("error: could not create library {}", e);
+				return Err(Error::Other);
+			}
 		}
 	}
 
