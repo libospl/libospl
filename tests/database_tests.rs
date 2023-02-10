@@ -1,6 +1,6 @@
-mod library_tests;
-use library_tests::generate_test_path;
-use library_tests::remove_test_path;
+mod test_tools;
+use test_tools::generate_test_path;
+use test_tools::remove_test_path;
 
 #[cfg(test)]
 mod tests
