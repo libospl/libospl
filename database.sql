@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS settings (
 -- Table where each row represents a photo.
 CREATE TABLE IF NOT EXISTS photos (
 	id						INTEGER NOT NULL UNIQUE,
-	filename				TEXT NOT NULL UNIQUE,
+	filename				TEXT NOT NULL,
 	hash					BLOB NOT NULL,
 	thumbnail_hash			TEXT,
 	import_datetime			DATETIME,
