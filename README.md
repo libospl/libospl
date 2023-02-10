@@ -1,7 +1,7 @@
 [![CircleCI](https://circleci.com/gh/AngeloFrangione/libospl.svg?style=shield)](https://app.circleci.com/pipelines/github/AngeloFrangione/libospl)
 [![Coverage](https://codecov.io/gh/AngeloFrangione/libospl/branch/main/graph/badge.svg?token=53EckTgSg7)](https://codecov.io/gh/AngeloFrangione/libospl)
 [![GitHub milestone](https://img.shields.io/github/milestones/progress-percent/AngeloFrangione/libospl/1)](https://github.com/AngeloFrangione/libospl/milestones)
-
+[![dependency status](https://deps.rs/repo/github/AngeloFrangione/libospl/status.svg)](https://deps.rs/repo/github/AngeloFrangione/libospl)
 # libospl - Open Source Photo Library
 ----------------------------------------
 ### OSP what?
