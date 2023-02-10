@@ -30,7 +30,7 @@ use chrono::naive::NaiveDateTime;
 #[derive(Debug)]
 pub struct Collection
 {
-	id:					u32,
+	id:						u32,
 	creation_datetime:		Option<NaiveDateTime>,
 	modification_datetime:	Option<NaiveDateTime>,
 	name:					String,
@@ -66,22 +66,22 @@ impl Collection
 		}
 	}
 
-	pub fn set_id (&mut self, id: u32)
+	pub fn set_id(&mut self, id: u32)
 	{
 		self.id = id;
 	}
 
-	pub fn id (&self) -> u32
+	pub fn id(&self) -> u32
 	{
 		self.id
 	}
 
-	pub fn name (&self) -> String
+	pub fn name(&self) -> String
 	{
 		self.name.clone()
 	}
 	
-	pub fn comment (&self) -> String
+	pub fn comment(&self) -> String
 	{
 		self.comment.clone()
 	}
@@ -140,14 +140,14 @@ impl ElementDatabase for Collection
 
 impl ElementFilesystem for Collection
 {
-	fn insert_into (&self, fs: &Filesystem) -> Result<(), Error> 
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
 	{
 		let path = fs.collections_path().join(&self.name);
 		std::fs::create_dir(&path)?;
 		Ok(())
 	}
 
-	fn remove_from (&self, fs: &Filesystem) -> Result<(), Error>
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
 	{
 		Ok(std::fs::remove_dir_all(fs.collections_path())?)
 	}
