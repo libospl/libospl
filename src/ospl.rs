@@ -227,6 +227,104 @@ impl Library
 		Ok(photo)
 	}
 
+	/// Get all photos in a Vec, with only the id and the thumbnail path
+	///
+	/// This function is useful to show all photos consuming less memory
+	/// because it only contains the id and the thumbnail path.
+	/// To get more details about a photo call [Library::get_photo_from_id()]
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let photos = library.list_all_thumbnails().unwrap();
+	/// for photo in photos
+	/// {
+	/// 	println!("photo id: {} | thumbnail_path: {:#?}", photo.0, photo.1);
+	/// }
+	/// ```
+	pub fn list_all_thumbnails(&self) -> Result<Vec<(u32, PathBuf)>, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		<Photo as element::ElementListing<(u32, PathBuf)>>::list_all(&db, &self.fs)
+	}
+
+	/// Get all photos in a Vec<Photo>
+	///
+	/// This function gets all photos from the library, and all data related
+	/// to the photos inside the Photo struct.
+	/// To get all photos with less details use [Library::list_all_thumbnails()]
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let photos = library.list_all_photos().unwrap();
+	/// for photo in photos
+	/// {
+	/// 	println!("photo id: {} | thumbnail_path: {}", photo.id(), photo.get_filename());
+	/// }
+	/// ```
+	pub fn list_all_photos(&self) -> Result<Vec<Photo>, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		<Photo as element::ElementListing<Photo>>::list_all(&db, &self.fs)
+	}
+
+	/// Get all collections in a Vec<Collection>
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let collections = library.list_all_collections().unwrap();
+	/// for collection in collections
+	/// {
+	/// 	println!("collection id: {} | name: {}", collection.id(), collection.name());
+	/// }
+	/// ```
+	pub fn list_all_collections(&self) -> Result<Vec<Collection>, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		<Collection as element::ElementListing<Collection>>::list_all(&db, &self.fs)
+	}
+
+	/// Get all albums in a Vec<Album>
+	///
+	///	# Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let albums = library.list_albums_in_collection(1).unwrap();
+	/// for album in albums
+	/// {
+	/// 	println!("album id: {} | name: {}", album.id(), album.name());
+	/// }
+	/// ``` 
+	pub fn list_albums_in_collection(&self, collection: u32) -> Result<Vec<Album>, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		<Collection as element::InsideElementListing<Album>>::list_inside(&db, collection)
+	}
+
+	/// Get all photos in a Vec<Photo>
+	///
+	///	# Example
+	/// ```no_run
+	/// # use ospl::Library;
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let photos = library.list_photos_in_album(1).unwrap();
+	/// for photo in photos
+	/// {
+	/// 	println!("photo id: {} | name: {}", photo.id(), photo.get_filename());
+	/// }
+	/// ```
+	pub fn list_photos_in_album(&self, album_id: u32) -> Result<Vec<Photo>, Error>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		<Album as element::InsideElementListing<Photo>>::list_inside(&db, album_id)
+	}
+
 	/// Deletes a photo with given id
 	///
 	/// # Example
@@ -330,7 +428,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::Library;
+	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let collection_2030 = library.get_collection_from_id(35).unwrap();
 	/// let album = library.create_album("Summer 2030", "All photos from my 2030 summer", collection_2030.id());
@@ -355,7 +453,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::Library;
+	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// library.create_album("2019", "", 35);
 	/// let album = library.get_album_from_id(23).unwrap();
@@ -375,7 +473,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::Library;
+	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let album = library.create_album("2019", "", 35).unwrap();
 	/// assert_eq!(album.name(), "2019");
@@ -396,7 +494,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::Library;
+	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// let collection_2019 = library.get_collection_from_id(21).unwrap();
@@ -420,7 +518,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::{Library, Error};
+	/// # use ospl::{Library, Error};
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// library.delete_album_by_id(35);
@@ -438,7 +536,7 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// use ospl::{Library, Error};
+	/// # use ospl::{Library, Error};
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// library.assign_photo_to_album(27, album.id());

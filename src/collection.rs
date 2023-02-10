@@ -18,11 +18,14 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+use crate::album::Album;
 use crate::element::ElementDatabase;
 use crate::element::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
 use crate::Error;
+use crate::element::ElementListing;
+use crate::element::InsideElementListing;
 
 use chrono::naive::NaiveDateTime;
 
@@ -137,6 +140,59 @@ impl ElementDatabase for Collection
 		Ok(())
 	}
 }
+
+impl InsideElementListing<Album> for Collection
+{
+	fn list_inside(db: &Database, collection: u32)-> Result<Vec<Album>, Error>
+	{
+		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE collection = ?1")?;
+		let mut rows = stmt.query(&[&collection])?;
+
+		let mut albums = Vec::new();
+		while let Some(row) = rows.next()?
+		{
+			let mut c = Collection::new();
+			c.from_id(db, row.get(5)?)?;
+			let album = Album
+			{
+				id: row.get(0)?,
+				name: row.get(1)?,
+				comment: row.get(2)?,
+				creation_datetime: Some(row.get(3)?),
+				modification_datetime: Some(row.get(4)?),
+				collection: c,
+			};
+			albums.push(album);
+		}	
+		Ok(albums)
+	}
+}
+
+
+impl ElementListing<Collection> for Collection
+{
+	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Collection>, Error>
+	{
+		let mut stmt = db.connection.prepare("SELECT * FROM collections")?;
+		let mut rows = stmt.query(())?;
+
+		let mut collections = Vec::new();
+		while let Some(row) = rows.next()?
+		{
+			let collection = Collection
+			{
+				id: row.get(0)?,
+				name: row.get(1)?,
+				comment: row.get(2)?,
+				creation_datetime: Some(row.get(3)?),
+				modification_datetime: Some(row.get(4)?),
+			};
+			collections.push(collection);
+		}	
+		Ok(collections)
+	}
+}
+
 
 impl ElementFilesystem for Collection
 {

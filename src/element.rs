@@ -35,6 +35,16 @@ pub trait ElementDatabase
 	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>;
 }
 
+pub trait InsideElementListing<T>
+{
+	fn list_inside(db: &Database, id: u32)-> Result<Vec<T>, Error>;
+}
+
+pub trait ElementListing<T>
+{
+	fn list_all(db: &Database, fs: &Filesystem)-> Result<Vec<T>, Error>;
+}
+
 /// Trait related to filesystem interactions
 pub trait ElementFilesystem
 {
