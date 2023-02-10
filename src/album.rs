@@ -19,6 +19,7 @@
 */
 
 use crate::collection::Collection;
+use crate::element::InsideElementListing;
 use crate::photo::Photo;
 use crate::element::ElementDatabase;
 use crate::element::ElementFilesystem;
@@ -34,12 +35,12 @@ use log::warn;
 #[derive(Debug)]
 pub struct Album
 {
-	id:					u32,
-	creation_datetime:		Option<NaiveDateTime>,
-	modification_datetime:	Option<NaiveDateTime>,
-	name:					String,
-	comment:				String,
-	collection:				Collection,
+	pub(crate) id:					u32,
+	pub(crate) creation_datetime:		Option<NaiveDateTime>,
+	pub(crate) modification_datetime:	Option<NaiveDateTime>,
+	pub(crate) name:					String,
+	pub(crate) comment:				String,
+	pub(crate) collection:				Collection,
 }
 
 // Constructors
@@ -232,5 +233,22 @@ impl Album
 		db.connection.execute("INSERT INTO photos_albums_map (containing_album, contained_photo) VALUES (?1, ?2)",
 		(self.id(), photo.id))?;
 		Ok(())
+	}
+}
+
+impl InsideElementListing<Photo> for Album
+{
+	fn list_inside(db: &Database, id: u32) -> Result<Vec<Photo>, Error>
+	{
+		let mut stmt = db.connection.prepare("SELECT contained_photo FROM photos_albums_map WHERE containing_album = ?1")?;
+		let mut rows = stmt.query(&[&id])?;
+		let mut photos = Vec::new();
+		while let Some(row) = rows.next()?
+		{
+			let mut photo = Photo::new();
+			db.from_id(&mut photo, row.get(0)?)?;
+			photos.push(photo);
+		}
+		Ok(photos)
 	}
 }

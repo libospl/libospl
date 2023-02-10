@@ -23,6 +23,7 @@ use crate::element::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
 use crate::Error;
+use crate::element::ElementListing;
 
 use chrono::naive::NaiveDateTime;
 use xxhash_rust::xxh3::xxh3_128;
@@ -136,7 +137,11 @@ impl ElementDatabase for Photo
 		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime))
 		{
 			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
-			Err(_) => return Err(Error::Other)
+			Err(e) =>
+			{
+				println!("error: {}", e);
+				return Err(Error::Other);
+			}
 		}
 	}
 
@@ -207,6 +212,58 @@ fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
 		None =>	{ return Err(Error::NotAnImage); }
 	}
 	Ok(false)
+}
+
+impl ElementListing<Photo> for Photo
+{
+	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Photo>, Error>
+	{
+		let mut photos: Vec<Photo> = Vec::new();
+		let mut stmt = db.connection.prepare("SELECT * FROM photos")?;
+		let mut rows = stmt.query(())?;
+		while let Some(row) = rows.next()?
+		{
+			let photo = Photo
+			{
+				id:					row.get(0)?,
+				filename:			row.get(1)?,
+				hash:				u128::from_ne_bytes(row.get(2)?),
+				import_datetime:	row.get(4)?,
+				rating:				row.get(10)?,
+				starred:			row.get(11)?,
+
+				path_on_fs:			Path::new("").to_path_buf(),
+			};
+			photos.push(photo);
+		}
+		Ok(photos)
+	}
+}
+impl ElementListing<(u32, PathBuf)> for Photo
+{
+	fn list_all(db: &Database, fs: &Filesystem) -> Result<Vec<(u32, PathBuf)>, Error>
+	{
+		let mut photos: Vec<(u32, PathBuf)> = Vec::new();
+		let mut stmt = db.connection.prepare("SELECT * FROM photos")?;
+		let mut rows = stmt.query(())?;
+		while let Some(row) = rows.next()?
+		{
+			let photo = Photo
+			{
+				id:					row.get(0)?,
+				filename:			row.get(1)?,
+				hash:				u128::from_ne_bytes(row.get(2)?),
+				import_datetime:	row.get(4)?,
+				rating:				row.get(10)?,
+				starred:			row.get(11)?,
+
+				path_on_fs:			Path::new("").to_path_buf(),
+			};
+			let thumbnail_path = fs.thumbnails_path().join(photo.get_filename());
+			photos.push((photo.id(), thumbnail_path));
+		}
+		Ok(photos)
+	}
 }
 
 /// Returns only the filename from a path
