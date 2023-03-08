@@ -66,7 +66,7 @@ There is also a .sql file at the [root directory](database.sql)
 
 ## Milestones
 
-You can look at the current milestones [here](https://github.com/AngeloFrangione/libospl/milestones)
+You can look at the current milestones [here](https://github.com/libospl/libospl/milestones)
 
 ## Big ideas
 * For all awesome ideas look at [IDEAS.md](IDEAS.md) 
