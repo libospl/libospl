@@ -18,14 +18,14 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::album::Album;
-use crate::element::ElementDatabase;
-use crate::element::ElementFilesystem;
+use crate::element::album::Album;
+use crate::element::traits::ElementDatabase;
+use crate::element::traits::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
 use crate::Error;
-use crate::element::ElementListing;
-use crate::element::InsideElementListing;
+use crate::element::traits::ElementListing;
+use crate::element::traits::InsideElementListing;
 
 use chrono::naive::NaiveDateTime;
 

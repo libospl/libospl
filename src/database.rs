@@ -19,7 +19,7 @@
 */
 
 use super::Error;
-use crate::element::ElementDatabase;
+use crate::element::traits::ElementDatabase;
 
 use std::path::{Path};
 use rusqlite::{Connection};
