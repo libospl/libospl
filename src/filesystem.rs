@@ -20,7 +20,7 @@
 
 use crate::Error;
 use crate::database::Database;
-use crate::element::ElementFilesystem;
+use crate::element::traits::ElementFilesystem;
 
 use super::DATABASE_FILENAME;
 
