@@ -123,7 +123,7 @@ impl ElementDatabase for Photo
 	/// Deletes the photo from the database with its id
 	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])?;
+		db.connection.execute("DELETE FROM photos WHERE id = ?1", [&self.id])?;
 		Ok(())
 	}
 
@@ -145,7 +145,7 @@ impl ElementDatabase for Photo
 	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM photos WHERE id = ?1")?;
-		let mut rows = stmt.query(&[&id])?;
+		let mut rows = stmt.query([&id])?;
 		while let Some(row) = rows.next()?
 		{
 			self.id = row.get(0)?;

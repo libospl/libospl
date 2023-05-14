@@ -96,7 +96,7 @@ impl ElementDatabase for Collection
 {
 	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		db.connection.execute("DELETE FROM collections WHERE id = ?1", &[&self.id])?;
+		db.connection.execute("DELETE FROM collections WHERE id = ?1", [&self.id])?;
 		Ok(())
 	}
 
@@ -117,7 +117,7 @@ impl ElementDatabase for Collection
 	{
 		// fill self with the Collection table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM collections WHERE id = ?1")?;
-		let mut rows = stmt.query(&[&id])?;
+		let mut rows = stmt.query([&id])?;
 
 		while let Some(row) = rows.next()?
 		{
@@ -140,7 +140,7 @@ impl InsideElementListing<Album> for Collection
 	fn list_inside(db: &Database, collection: u32)-> Result<Vec<Album>, OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE collection = ?1")?;
-		let mut rows = stmt.query(&[&collection])?;
+		let mut rows = stmt.query([&collection])?;
 
 		let mut albums = Vec::new();
 		while let Some(row) = rows.next()?
@@ -193,7 +193,7 @@ impl ElementFilesystem for Collection
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		let path = fs.collections_path().join(&self.name);
-		std::fs::create_dir(&path)?;
+		std::fs::create_dir(path)?;
 		Ok(())
 	}
 
