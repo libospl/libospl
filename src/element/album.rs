@@ -122,7 +122,7 @@ impl ElementDatabase for Album
 {
 	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		db.connection.execute("DELETE FROM albums WHERE id = ?1", &[&self.id])?;
+		db.connection.execute("DELETE FROM albums WHERE id = ?1", [&self.id])?;
 		Ok(())
 	}
 
@@ -143,7 +143,7 @@ impl ElementDatabase for Album
 	{
 		// fill self with the albums table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE id = ?1")?;
-		let mut rows = stmt.query(&[&id])?;
+		let mut rows = stmt.query([&id])?;
 
 		while let Some(row) = rows.next()?
 		{
@@ -235,7 +235,7 @@ impl InsideElementListing<Photo> for Album
 	fn list_inside(db: &Database, id: u32) -> Result<Vec<Photo>, OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT contained_photo FROM photos_albums_map WHERE containing_album = ?1")?;
-		let mut rows = stmt.query(&[&id])?;
+		let mut rows = stmt.query([&id])?;
 		let mut photos = Vec::new();
 		while let Some(row) = rows.next()?
 		{
