@@ -70,7 +70,7 @@ impl Album
 			modification_datetime:	Some(chrono::offset::Local::now().naive_local()),
 			name:					String::from(name),
 			comment:				String::from(comment),
-			collection:				collection,
+			collection,
 		}
 	}
 }
