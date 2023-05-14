@@ -38,7 +38,7 @@ impl Library
 	/// let photos = library.list_all_thumbnails().unwrap();
 	/// for photo in photos
 	/// {
-	/// 	println!("photo id: {} | thumbnail_path: {:#?}", photo.0, photo.1);
+	///     println!("photo id: {} | thumbnail_path: {:#?}", photo.0, photo.1);
 	/// }
 	/// ```
 	pub fn list_all_thumbnails(&self) -> Result<Vec<(u32, PathBuf)>, OsplError>
@@ -60,7 +60,7 @@ impl Library
 	/// let photos = library.list_all_photos().unwrap();
 	/// for photo in photos
 	/// {
-	/// 	println!("photo id: {} | thumbnail_path: {}", photo.id(), photo.get_filename());
+	///     println!("photo id: {} | thumbnail_path: {}", photo.id(), photo.get_filename());
 	/// }
 	/// ```
 	pub fn list_all_photos(&self) -> Result<Vec<Photo>, OsplError>

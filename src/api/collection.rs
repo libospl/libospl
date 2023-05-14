@@ -15,7 +15,7 @@ impl Library
 	/// let collections = library.list_all_collections().unwrap();
 	/// for collection in collections
 	/// {
-	/// 	println!("collection id: {} | name: {}", collection.id(), collection.name());
+	///     println!("collection id: {} | name: {}", collection.id(), collection.name());
 	/// }
 	/// ```
 	pub fn list_all_collections(&self) -> Result<Vec<Collection>, OsplError>
@@ -30,11 +30,11 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	///	let library = Library::create("/my/awesome/path.ospl/").unwrap();
-	///	match library.create_collection("2019", "Photos from 2019") {
-	///		Ok(_) => {},
-	///		Err(err) => {panic!("Error creating collection: {:?}", err)}
-	///	};
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
+	/// match library.create_collection("2019", "Photos from 2019") {
+	///     Ok(_) => {},
+	///     Err(err) => {panic!("Error creating collection: {:?}", err)}
+	/// };
 	///```
 	pub fn create_collection(&self, name: &str, comment: &str) -> Result<Collection, OsplError>
 	{
@@ -54,8 +54,8 @@ impl Library
 	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
-	///	let library = Library::create("/my/awesome/path.ospl/").unwrap();
-	///	library.create_collection("2019", "Photos from 2019").unwrap();
+	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
+	/// library.create_collection("2019", "Photos from 2019").unwrap();
 	/// let collection = library.get_collection_from_id(1).unwrap();
 	/// assert_eq!("2019", collection.name());
 	/// assert_eq!("Photos from 2019", collection.comment());
@@ -109,14 +109,14 @@ impl Library
 
 		/// Get all albums in a Vec<Album>
 	///
-	///	# Example
+	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let albums = library.list_albums_in_collection(1).unwrap();
 	/// for album in albums
 	/// {
-	/// 	println!("album id: {} | name: {}", album.id(), album.name());
+	///     println!("album id: {} | name: {}", album.id(), album.name());
 	/// }
 	/// ``` 
 	pub fn list_albums_in_collection(&self, collection: u32) -> Result<Vec<Album>, OsplError>

@@ -117,14 +117,14 @@ impl Library
 
 	/// Get all photos from an album in a Vec<Photo>
 	///
-	///	# Example
+	/// # Example
 	/// ```no_run
 	/// # use ospl::Library;
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let photos = library.list_photos_in_album(1).unwrap();
 	/// for photo in photos
 	/// {
-	/// 	println!("photo id: {} | name: {}", photo.id(), photo.get_filename());
+	///     println!("photo id: {} | name: {}", photo.id(), photo.get_filename());
 	/// }
 	/// ```
 	pub fn list_photos_in_album(&self, album_id: u32) -> Result<Vec<Photo>, OsplError>
