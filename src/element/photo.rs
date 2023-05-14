@@ -114,7 +114,7 @@ impl Photo // Public function to get information about the photo
 {
 	pub fn get_filename(&self) -> String
 	{
-		String::from(self.get_time_formatted() + "_" + &self.filename)
+		self.get_time_formatted() + "_" + &self.filename
 	}
 }
 
