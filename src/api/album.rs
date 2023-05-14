@@ -20,7 +20,7 @@ impl Library
 	{
 		let db = Database::new(self.fs.database_path())?;
 
-		if name == ""
+		if name.is_empty()
 		{
 			return Err(OsplError::InternalError(Error::EmptyName));
 		}
