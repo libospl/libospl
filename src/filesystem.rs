@@ -18,7 +18,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::Error;
+use crate::{Error, OsplError};
 use crate::database::Database;
 use crate::element::traits::ElementFilesystem;
 
@@ -53,7 +53,7 @@ impl Filesystem
 	}
 
 	/// Create the filesystem object and creates the main fs structure
-	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
+	pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, OsplError>
 	{
 		let fs = Self::new(path)?;
 		std::fs::create_dir(&fs.thumbnails_path)?;
@@ -102,7 +102,7 @@ impl Filesystem
 	/// Inserts the element into the library filesystem
 	///
 	/// If fs.insert(object) is called, it will call object.insert_into(Filesystem struct)
-	pub(crate) fn insert(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
+	pub(crate) fn insert(&self, object: &dyn ElementFilesystem) -> Result<(), OsplError>
 	{
 		object.insert_into(self)
 	}
@@ -110,7 +110,7 @@ impl Filesystem
 	/// Rename the element in the library filesystem
 	///
 	/// If fs.rename(object) is called it will call object.rename(Filesystem struct)
-	pub(crate) fn rename(&self, object: &dyn ElementFilesystem, new_name: &str) -> Result<(), Error>
+	pub(crate) fn rename(&self, object: &dyn ElementFilesystem, new_name: &str) -> Result<(), OsplError>
 	{
 		object.rename(self, new_name)
 	}
@@ -118,7 +118,7 @@ impl Filesystem
 	/// Removes the element from the library filesystem
 	///
 	/// If fs.remove(object) is called, it will call object.remove_from(Filesystem struct)
-	pub(crate) fn remove(&self, object: &dyn ElementFilesystem) -> Result<(), Error>
+	pub(crate) fn remove(&self, object: &dyn ElementFilesystem) -> Result<(), OsplError>
 	{
 		object.remove_from(self)
 	}

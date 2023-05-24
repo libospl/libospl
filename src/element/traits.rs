@@ -20,38 +20,38 @@
 
 use crate::Database;
 use crate::Filesystem;
-use crate::Error;
+use crate::OsplError;
 
 /// Trait related to database interactions
 pub trait ElementDatabase
 {
 	/// Insert the element into the given database
-	fn insert_into(&self, db: &Database) -> Result<u32, Error>;
+	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>;
 	/// Fill the element with data from database
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>;
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>;
 	/// Deletes the element from the database, the element must be loaded and have an id
-	fn delete(&self, db: &Database) -> Result<(), Error>;
+	fn delete(&self, db: &Database) -> Result<(), OsplError>;
 	/// Rename the element in the database
-	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>;
+	fn rename(&self, db: &Database, new_name: &str) -> Result<(), OsplError>;
 }
 
 pub trait InsideElementListing<T>
 {
-	fn list_inside(db: &Database, id: u32)-> Result<Vec<T>, Error>;
+	fn list_inside(db: &Database, id: u32)-> Result<Vec<T>, OsplError>;
 }
 
 pub trait ElementListing<T>
 {
-	fn list_all(db: &Database, fs: &Filesystem)-> Result<Vec<T>, Error>;
+	fn list_all(db: &Database, fs: &Filesystem)-> Result<Vec<T>, OsplError>;
 }
 
 /// Trait related to filesystem interactions
 pub trait ElementFilesystem
 {
 	/// Inserts the element into the library filesystem
-	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>;
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError>;
 	/// Removes the element from the library filesystem
-	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>;
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), OsplError>;
 	/// Rename the element on the library filesystem
-	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), Error>;
+	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), OsplError>;
 }

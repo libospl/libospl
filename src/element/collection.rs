@@ -23,7 +23,7 @@ use crate::element::traits::ElementDatabase;
 use crate::element::traits::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
-use crate::Error;
+use crate::OsplError;
 use crate::element::traits::ElementListing;
 use crate::element::traits::InsideElementListing;
 
@@ -94,32 +94,26 @@ impl Collection
 
 impl ElementDatabase for Collection
 {
-	fn delete(&self, db: &Database) -> Result<(), Error>
+	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		match db.connection.execute("DELETE FROM collections WHERE id = ?1", &[&self.id])
-		{
-			Ok(_) => Ok(()),
-			Err(_) => return Err(Error::Other)
-		}
+		db.connection.execute("DELETE FROM collections WHERE id = ?1", &[&self.id])?;
+		Ok(())
 	}
 
-	fn insert_into(&self, db: &Database) -> Result<u32, Error>
+	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>
 	{
-		match db.connection.execute("INSERT INTO collections (name, comment, creation_datetime, modification_datetime) VALUES (?1, ?2, ?3, ?4)",
-		(&self.name, &self.comment, &self.creation_datetime, &self.modification_datetime))
-		{
-			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
-			Err(_) => return Err(Error::Other)
-		}
+		db.connection.execute("INSERT INTO collections (name, comment, creation_datetime, modification_datetime) VALUES (?1, ?2, ?3, ?4)",
+		(&self.name, &self.comment, &self.creation_datetime, &self.modification_datetime))?;
+		Ok(db.connection.last_insert_rowid() as u32)
 	}
 
-	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>
+	fn rename(&self, db: &Database, new_name: &str) -> Result<(), OsplError>
 	{
 		db.connection.execute("UPDATE collections SET name = ?1 WHERE id = ?2", (new_name, &self.id))?;
 		Ok(())
 	}
 
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		// fill self with the Collection table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM collections WHERE id = ?1")?;
@@ -135,7 +129,7 @@ impl ElementDatabase for Collection
 		}
 		if self.id == 0
 		{
-			return Err(Error::NotFound);
+			return Err(OsplError::IoError(std::io::ErrorKind::NotFound));
 		}
 		Ok(())
 	}
@@ -143,7 +137,7 @@ impl ElementDatabase for Collection
 
 impl InsideElementListing<Album> for Collection
 {
-	fn list_inside(db: &Database, collection: u32)-> Result<Vec<Album>, Error>
+	fn list_inside(db: &Database, collection: u32)-> Result<Vec<Album>, OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE collection = ?1")?;
 		let mut rows = stmt.query(&[&collection])?;
@@ -171,7 +165,7 @@ impl InsideElementListing<Album> for Collection
 
 impl ElementListing<Collection> for Collection
 {
-	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Collection>, Error>
+	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Collection>, OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM collections")?;
 		let mut rows = stmt.query(())?;
@@ -196,19 +190,19 @@ impl ElementListing<Collection> for Collection
 
 impl ElementFilesystem for Collection
 {
-	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		let path = fs.collections_path().join(&self.name);
 		std::fs::create_dir(&path)?;
 		Ok(())
 	}
 
-	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		Ok(std::fs::remove_dir_all(fs.collections_path())?)
 	}
 
-	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), Error>
+	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), OsplError>
 	{
 		let path_old = fs.collections_path().join(self.name());
 		let path_new = fs.collections_path().join(new_name);

@@ -17,7 +17,7 @@
 	with this program; if not, write to the Free Software Foundation, Inc.,
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-use crate::Error;
+use crate::OsplError;
 
 use std::path::Path;
 use image::imageops::thumbnail;
@@ -29,7 +29,7 @@ use image::imageops::thumbnail;
 // establish the basic functionality of the OSPL project.
 
 /// creates a thumbnail of the photo and scales it down with an height of 325px
-pub fn create_thumbnail_from_path<P, Q>(photo_path: P, save_to: Q) -> Result<(), Error>
+pub fn create_thumbnail_from_path<P, Q>(photo_path: P, save_to: Q) -> Result<(), OsplError>
 where
 	P: AsRef<Path>,
 	Q: AsRef<Path>,

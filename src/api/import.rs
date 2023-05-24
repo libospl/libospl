@@ -1,6 +1,6 @@
 use crate::Library;
 use crate::Database;
-use crate::Error;
+use crate::OsplError;
 use crate::thumbnails;
 use crate::Photo;
 
@@ -17,12 +17,12 @@ impl Library
 	/// let library = Library::create("/my/awesome/path.ospl/").unwrap();
 	/// library.import_photo("my_awesome_picture.jpg");
 	///```
-	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, Error>
+	pub fn import_photo<P: AsRef<Path>>(&self, photo_path: P) -> Result<u32, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		if !photo_path.as_ref().exists()
 		{
-			return Err(Error::NotFound);
+			return Err(OsplError::IoError(std::io::ErrorKind::NotFound));
 		}
 		let mut photo = Photo::new();
 		photo.from_file(&db, &photo_path)?;

@@ -1,5 +1,5 @@
 use crate::Library;
-use crate::Error;
+use crate::OsplError;
 use crate::Database;
 use crate::Photo;
 
@@ -17,7 +17,7 @@ impl Library
 	/// let photo = library.get_photo_from_id(1);
 	/// println!("Photo: {:?}", photo);
 	///```
-	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, Error>
+	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut photo = Photo::new();
@@ -41,7 +41,7 @@ impl Library
 	/// 	println!("photo id: {} | thumbnail_path: {:#?}", photo.0, photo.1);
 	/// }
 	/// ```
-	pub fn list_all_thumbnails(&self) -> Result<Vec<(u32, PathBuf)>, Error>
+	pub fn list_all_thumbnails(&self) -> Result<Vec<(u32, PathBuf)>, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		<Photo as crate::element::traits::ElementListing<(u32, PathBuf)>>::list_all(&db, &self.fs)
@@ -63,7 +63,7 @@ impl Library
 	/// 	println!("photo id: {} | thumbnail_path: {}", photo.id(), photo.get_filename());
 	/// }
 	/// ```
-	pub fn list_all_photos(&self) -> Result<Vec<Photo>, Error>
+	pub fn list_all_photos(&self) -> Result<Vec<Photo>, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		<Photo as crate::element::traits::ElementListing<Photo>>::list_all(&db, &self.fs)
@@ -80,7 +80,7 @@ impl Library
 	/// library.import_photo("my_awesome_picture.jpg");
 	/// library.delete_photo_by_id(1);
 	///```
-	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), Error>
+	pub fn delete_photo_by_id(&self, id: u32) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let photo = self.get_photo_from_id(id)?;

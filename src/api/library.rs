@@ -1,5 +1,5 @@
 use crate::Library;
-use crate::Error;
+use crate::OsplError;
 use crate::Filesystem;
 
 use std::path::Path;
@@ -21,23 +21,13 @@ impl Library
 	/// 	Err(e) => println!("An error occured: {:?}", e),
 	/// };
 	///```
-	pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, Error>
+	pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, OsplError>
 	{
-		match std::fs::create_dir(&path)
+		std::fs::create_dir(&path)?;
+		Ok(Library
 		{
-			Ok(_) =>
-			{
-				Ok(Library
-				{
-					fs: Filesystem::create(path)?,
-				})
-			},
-			Err(e) =>
-			{
-				log::warn!("error: could not create library {}", e);
-				return Err(Error::Other);
-			}
-		}
+			fs: Filesystem::create(path)?,
+		})
 	}
 
 	/// Loads an existing ospl Library
@@ -51,7 +41,7 @@ impl Library
 	/// 	Err(e) => println!("An error occured: {:?}", e),
 	/// };
 	/// ```
-	pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, Error>
+	pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, OsplError>
 	{	
 		Ok(Library
 		{

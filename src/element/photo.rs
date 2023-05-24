@@ -22,7 +22,7 @@ use crate::element::traits::ElementDatabase;
 use crate::element::traits::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
-use crate::Error;
+use crate::{Error, OsplError};
 use crate::element::traits::ElementListing;
 
 use chrono::naive::NaiveDateTime;
@@ -70,15 +70,15 @@ impl Photo
 	/// - import datetime
 	/// - the current path on the filesystem
 	pub fn from_file<P: AsRef<Path>>(&mut self, _db: &Database, photo_path: P)
-	-> Result <(), Error>
+	-> Result <(), OsplError>
 	{
 		if photo_path.as_ref().is_dir()
 		{
-			return Err(Error::IsADirectory);
+			return Err(OsplError::InternalError(Error::IsADirectory));
 		}
 		if !is_photo(&photo_path)?
 		{
-			return Err(Error::NotAnImage);
+			return Err(OsplError::InternalError(Error::NotAnImage));
 		}
 		self.filename = get_filename_from(&photo_path);
 		self.hash = xxh3_128(&std::fs::read(&photo_path)?);
@@ -121,38 +121,28 @@ impl Photo // Public function to get information about the photo
 impl ElementDatabase for Photo
 {
 	/// Deletes the photo from the database with its id
-	fn delete(&self, db: &Database) -> Result<(), Error>
+	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		match db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])
-		{
-			Ok(_) => Ok(()),
-			Err(_) => return Err(Error::Other)
-		}
+		db.connection.execute("DELETE FROM photos WHERE id = ?1", &[&self.id])?;
+		Ok(())
 	}
 
 	/// Insert a photo into the database, returns the id of it.
-	fn insert_into(&self, db: &Database) -> Result<u32, Error>
+	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>
 	{
-		match db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",
-		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime))
-		{
-			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
-			Err(e) =>
-			{
-				println!("error: {}", e);
-				return Err(Error::Other);
-			}
-		}
+		db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",
+		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime))?;
+		Ok(db.connection.last_insert_rowid() as u32)
 	}
 
 	#[cfg(not(tarpaulin_include))]
-	fn rename(&self, _db: &Database, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, _db: &Database, _new_name: &str) -> Result<(), OsplError>
 	{
 		unimplemented!()
 	}
 
 	/// loads the photo object with data from db with its id
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM photos WHERE id = ?1")?;
 		let mut rows = stmt.query(&[&id])?;
@@ -165,7 +155,7 @@ impl ElementDatabase for Photo
 		}
 		if self.id == 0
 		{
-			return Err(Error::NotFound);
+			return Err(OsplError::IoError(std::io::ErrorKind::NotFound));
 		}
 		Ok(())
 	}
@@ -174,7 +164,7 @@ impl ElementDatabase for Photo
 impl ElementFilesystem for Photo
 {
 	/// Inserts a photo into the filesystem using `self.path_on_fs` variable
-	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error>
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		std::fs::copy(&self.path_on_fs, fs.pictures_path().join(self.get_filename()))?;
 		Ok(())
@@ -183,7 +173,7 @@ impl ElementFilesystem for Photo
 	/// Remove everything related to a photo from the filesystem.
 	///
 	/// this includes the thumbnail, and in the future every reference to it in the albums
-	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		std::fs::remove_file(fs.pictures_path().join(self.get_filename()))?;
 		std::fs::remove_file(fs.thumbnails_path().join(self.get_filename()))?;
@@ -191,14 +181,14 @@ impl ElementFilesystem for Photo
 	}
 
 	#[cfg(not(tarpaulin_include))]
-	fn rename(&self, _fs: &Filesystem, _new_name: &str) -> Result<(), Error>
+	fn rename(&self, _fs: &Filesystem, _new_name: &str) -> Result<(), OsplError>
 	{
 		unimplemented!()
 	}
 }
 
 /// Checks if the file is an image
-fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
+fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, OsplError>
 {
 	match infer::get_from_path(path)?
 	{
@@ -209,14 +199,14 @@ fn is_photo<P: AsRef<Path>>(path: P) -> Result<bool, Error>
 				return Ok(true);
 			}
 		}
-		None =>	{ return Err(Error::NotAnImage); }
+		None =>	{ return Err(OsplError::InternalError(Error::NotAnImage)); }
 	}
 	Ok(false)
 }
 
 impl ElementListing<Photo> for Photo
 {
-	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Photo>, Error>
+	fn list_all(db: &Database, _fs: &Filesystem) -> Result<Vec<Photo>, OsplError>
 	{
 		let mut photos: Vec<Photo> = Vec::new();
 		let mut stmt = db.connection.prepare("SELECT * FROM photos")?;
@@ -241,7 +231,7 @@ impl ElementListing<Photo> for Photo
 }
 impl ElementListing<(u32, PathBuf)> for Photo
 {
-	fn list_all(db: &Database, fs: &Filesystem) -> Result<Vec<(u32, PathBuf)>, Error>
+	fn list_all(db: &Database, fs: &Filesystem) -> Result<Vec<(u32, PathBuf)>, OsplError>
 	{
 		let mut photos: Vec<(u32, PathBuf)> = Vec::new();
 		let mut stmt = db.connection.prepare("SELECT * FROM photos")?;

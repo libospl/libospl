@@ -6,6 +6,7 @@ use test_tools::remove_test_path;
 mod tests
 {
 	use ospl::Library;
+	use ospl::OsplError;
 	use ospl::Error;
 
 	#[cfg(target_os = "linux")]
@@ -39,7 +40,7 @@ mod tests
 	{
 		let path = super::generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.import_photo("tests/files/test_folder/").err().unwrap(), Error::IsADirectory);
+		assert_eq!(library.import_photo("tests/files/test_folder/").err().unwrap(), OsplError::InternalError(Error::IsADirectory));
 		super::remove_test_path(path);
 	}
 
@@ -48,7 +49,7 @@ mod tests
 	{
 		let path = super::generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.import_photo("tests/files/not_an_image.odt").err().unwrap(), Error::NotAnImage);
+		assert_eq!(library.import_photo("tests/files/not_an_image.odt").err().unwrap(), OsplError::InternalError(Error::NotAnImage));
 		super::remove_test_path(path);
 	}
 
@@ -57,7 +58,7 @@ mod tests
 	{
 		let path = super::generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), Error::NotAnImage);
+		assert_eq!(library.import_photo("tests/files/not_a_valid_file.png").err().unwrap(), OsplError::InternalError(Error::NotAnImage));
 		super::remove_test_path(path);
 	}
 
@@ -66,7 +67,7 @@ mod tests
 	{
 		let path = super::generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.import_photo("").err().unwrap(), Error::NotFound);
+		assert_eq!(library.import_photo("").err().unwrap(), OsplError::IoError(std::io::ErrorKind::NotFound));
 		super::remove_test_path(path);
 	}
 
@@ -81,7 +82,7 @@ mod tests
 			use std::os::unix::fs::PermissionsExt;
 			fs::set_permissions("tests/files/test_photo_no_permissions.jpg", fs::Permissions::from_mode(0o000)).unwrap();
 		}
-		assert_eq!(library.import_photo("tests/files/test_photo_no_permissions.jpg").err().unwrap(), Error::PermissionDenied);
+		assert_eq!(library.import_photo("tests/files/test_photo_no_permissions.jpg").err().unwrap(), OsplError::IoError(std::io::ErrorKind::PermissionDenied));
 		#[cfg(all(unix))]
 		{
 			let mut reset_perms = std::process::Command::new("chmod");
