@@ -47,7 +47,7 @@ impl Library
 	pub fn get_album_from_id(&self, id: u32) -> Result<Album, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
-		let mut album = Album::new();
+		let mut album = Album::default();
 		db.from_id(&mut album, id)?;
 		Ok(album)
 	}

@@ -20,7 +20,7 @@ impl Library
 	pub fn get_photo_from_id(&self, id: u32) -> Result<Photo, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
-		let mut photo = Photo::new();
+		let mut photo = Photo::default();
 		db.from_id(&mut photo, id)?;
 		Ok(photo)
 	}

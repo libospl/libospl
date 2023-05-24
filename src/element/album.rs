@@ -43,6 +43,14 @@ pub struct Album
 	pub(crate) collection:				Collection,
 }
 
+impl Default for Album
+{
+	fn default() -> Self
+	{
+		Album::new()
+	}
+}
+
 // Constructors
 impl Album
 {
@@ -239,7 +247,7 @@ impl InsideElementListing<Photo> for Album
 		let mut photos = Vec::new();
 		while let Some(row) = rows.next()?
 		{
-			let mut photo = Photo::new();
+			let mut photo = Photo::default();
 			db.from_id(&mut photo, row.get(0)?)?;
 			photos.push(photo);
 		}

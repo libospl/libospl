@@ -39,6 +39,13 @@ pub struct Collection
 	name:					String,
 	comment:				String,
 }
+impl Default for Collection
+{
+	fn default() -> Self
+	{
+		Collection::new()
+	}
+}
 
 // Constructors
 impl Collection
@@ -145,7 +152,7 @@ impl InsideElementListing<Album> for Collection
 		let mut albums = Vec::new();
 		while let Some(row) = rows.next()?
 		{
-			let mut c = Collection::new();
+			let mut c = Collection::default();
 			c.from_id(db, row.get(5)?)?;
 			let album = Album
 			{
