@@ -28,7 +28,7 @@ pub trait ElementDatabase
 	/// Insert the element into the given database
 	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>;
 	/// Fill the element with data from database
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>;
+	fn load_from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>;
 	/// Deletes the element from the database, the element must be loaded and have an id
 	fn delete(&self, db: &Database) -> Result<(), OsplError>;
 	/// Rename the element in the database

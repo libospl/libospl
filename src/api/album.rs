@@ -48,7 +48,7 @@ impl Library
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut album = Album::default();
-		db.from_id(&mut album, id)?;
+		db.load_from_id(&mut album, id)?;
 		Ok(album)
 	}
 

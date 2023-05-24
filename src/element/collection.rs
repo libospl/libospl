@@ -120,7 +120,7 @@ impl ElementDatabase for Collection
 		Ok(())
 	}
 
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
+	fn load_from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		// fill self with the Collection table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM collections WHERE id = ?1")?;
@@ -153,7 +153,7 @@ impl InsideElementListing<Album> for Collection
 		while let Some(row) = rows.next()?
 		{
 			let mut c = Collection::default();
-			c.from_id(db, row.get(5)?)?;
+			c.load_from_id(db, row.get(5)?)?;
 			let album = Album
 			{
 				id: row.get(0)?,

@@ -21,7 +21,7 @@ impl Library
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut photo = Photo::default();
-		db.from_id(&mut photo, id)?;
+		db.load_from_id(&mut photo, id)?;
 		Ok(photo)
 	}
 
