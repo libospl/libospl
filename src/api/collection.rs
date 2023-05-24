@@ -1,5 +1,5 @@
 use crate::Library;
-use crate::Error;
+use crate::OsplError;
 use crate::Database;
 use crate::Collection;
 use crate::Album;
@@ -18,7 +18,7 @@ impl Library
 	/// 	println!("collection id: {} | name: {}", collection.id(), collection.name());
 	/// }
 	/// ```
-	pub fn list_all_collections(&self) -> Result<Vec<Collection>, Error>
+	pub fn list_all_collections(&self) -> Result<Vec<Collection>, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		<Collection as crate::element::traits::ElementListing<Collection>>::list_all(&db, &self.fs)
@@ -36,7 +36,7 @@ impl Library
 	///		Err(err) => {panic!("Error creating collection: {:?}", err)}
 	///	};
 	///```
-	pub fn create_collection(&self, name: &str, comment: &str) -> Result<Collection, Error>
+	pub fn create_collection(&self, name: &str, comment: &str) -> Result<Collection, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		// TODO: Add checking to see if the collection has not been created.
@@ -61,7 +61,7 @@ impl Library
 	/// assert_eq!("Photos from 2019", collection.comment());
 	/// assert_eq!(1, collection.id());
 	///```
-	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, Error>
+	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut collection = Collection::new();
@@ -81,7 +81,7 @@ impl Library
 	/// let collection = library.get_collection_from_id(collection.id()).unwrap();
 	/// assert_eq!("Birds", collection.name());
 	/// ```
-	pub fn rename_collection_with_id(&self, id: u32, new_name: &str) -> Result<(), Error>
+	pub fn rename_collection_with_id(&self, id: u32, new_name: &str) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let collection = self.get_collection_from_id(id)?;
@@ -99,7 +99,7 @@ impl Library
 	/// let collection = library.create_collection("Vacations", "Best photos of my holidays").unwrap();
 	/// library.delete_collection_by_id(collection.id());
 	///```
-	pub fn delete_collection_by_id(&self, id: u32) -> Result<(), Error>
+	pub fn delete_collection_by_id(&self, id: u32) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let collection = self.get_collection_from_id(id)?;
@@ -119,7 +119,7 @@ impl Library
 	/// 	println!("album id: {} | name: {}", album.id(), album.name());
 	/// }
 	/// ``` 
-	pub fn list_albums_in_collection(&self, collection: u32) -> Result<Vec<Album>, Error>
+	pub fn list_albums_in_collection(&self, collection: u32) -> Result<Vec<Album>, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		<Collection as crate::element::traits::InsideElementListing<Album>>::list_inside(&db, collection)

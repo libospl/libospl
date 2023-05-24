@@ -25,7 +25,7 @@ use crate::element::traits::ElementDatabase;
 use crate::element::traits::ElementFilesystem;
 use crate::Database;
 use crate::Filesystem;
-use crate::Error;
+use crate::OsplError;
 
 use std::path::PathBuf;
 use chrono::naive::NaiveDateTime;
@@ -120,32 +120,26 @@ impl Album
 
 impl ElementDatabase for Album
 {
-	fn delete(&self, db: &Database) -> Result<(), Error>
+	fn delete(&self, db: &Database) -> Result<(), OsplError>
 	{
-		match db.connection.execute("DELETE FROM albums WHERE id = ?1", &[&self.id])
-		{
-			Ok(_) => Ok(()),
-			Err(_) => return Err(Error::Other)
-		}
+		db.connection.execute("DELETE FROM albums WHERE id = ?1", &[&self.id])?;
+		Ok(())
 	}
 
-	fn insert_into(&self, db: &Database) -> Result<u32, Error>
+	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>
 	{
-		match db.connection.execute("INSERT INTO albums (name, comment, creation_datetime, modification_datetime, collection) VALUES (?1, ?2, ?3, ?4, ?5)",
-		(&self.name, &self.comment, &self.creation_datetime, &self.modification_datetime, self.collection.id()))
-		{
-			Ok(_) => Ok(db.connection.last_insert_rowid() as u32),
-			Err(_) => return Err(Error::Other)
-		}
+		db.connection.execute("INSERT INTO albums (name, comment, creation_datetime, modification_datetime, collection) VALUES (?1, ?2, ?3, ?4, ?5)",
+		(&self.name, &self.comment, &self.creation_datetime, &self.modification_datetime, self.collection.id()))?;
+		Ok(db.connection.last_insert_rowid() as u32)
 	}
 
-	fn rename(&self, db: &Database, new_name: &str) -> Result<(), Error>
+	fn rename(&self, db: &Database, new_name: &str) -> Result<(), OsplError>
 	{
 		db.connection.execute("UPDATE albums SET name = ?1 WHERE id = ?2", (new_name, &self.id))?;
 		Ok(())
 	}
 
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), Error>
+	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		// fill self with the albums table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE id = ?1")?;
@@ -163,7 +157,7 @@ impl ElementDatabase for Album
 		
 		if self.id == 0
 		{
-			return Err(Error::NotFound);
+			return Err(OsplError::IoError(std::io::ErrorKind::NotFound));
 		}
 		Ok(())
 	}
@@ -171,18 +165,18 @@ impl ElementDatabase for Album
 
 impl ElementFilesystem for Album
 {
-	fn insert_into(&self, fs: &Filesystem) -> Result<(), Error> 
+	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError> 
 	{
 		std::fs::create_dir(self.get_full_path(fs))?;
 		Ok(())
 	}
 
-	fn remove_from(&self, fs: &Filesystem) -> Result<(), Error>
+	fn remove_from(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
 		Ok(std::fs::remove_dir_all(self.get_full_path(fs))?)
 	}
 
-	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), Error>
+	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), OsplError>
 	{
 		let path_old = self.get_collection_path(fs).join(self.name());
 		let path_new = self.get_collection_path(fs).join(new_name);
@@ -193,14 +187,14 @@ impl ElementFilesystem for Album
 // Specific Filesystem functions
 impl Album
 {
-	pub fn move_to(&self, fs: &Filesystem, collection: &Collection) -> Result<(), Error>
+	pub fn move_to(&self, fs: &Filesystem, collection: &Collection) -> Result<(), OsplError>
 	{
 		let path_old = self.get_collection_path(fs).join(self.name());
 		let path_new = fs.collections_path().join(collection.name()).join(self.name());
 		Ok(std::fs::rename(path_old, path_new)?)
 	}
 
-	pub fn add(&self, fs: &Filesystem, photo: &Photo) -> Result<(), Error>
+	pub fn add(&self, fs: &Filesystem, photo: &Photo) -> Result<(), OsplError>
 	{
 		let photo_path = fs.pictures_path().join(photo.get_filename());
 		let link_path = fs.collections_path()
@@ -218,7 +212,7 @@ impl Album
 // Specific Database functions
 impl Album
 {
-	pub fn assign_to(&self, db: &Database, collection: &Collection) -> Result<(), Error>
+	pub fn assign_to(&self, db: &Database, collection: &Collection) -> Result<(), OsplError>
 	{
 		if self.collection.id() == collection.id()
 		{
@@ -228,7 +222,7 @@ impl Album
 		Ok(())
 	}
 
-	pub fn put(&self, db: &Database, photo: &Photo) -> Result<(), Error>
+	pub fn put(&self, db: &Database, photo: &Photo) -> Result<(), OsplError>
 	{
 		db.connection.execute("INSERT INTO photos_albums_map (containing_album, contained_photo) VALUES (?1, ?2)",
 		(self.id(), photo.id))?;
@@ -238,7 +232,7 @@ impl Album
 
 impl InsideElementListing<Photo> for Album
 {
-	fn list_inside(db: &Database, id: u32) -> Result<Vec<Photo>, Error>
+	fn list_inside(db: &Database, id: u32) -> Result<Vec<Photo>, OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT contained_photo FROM photos_albums_map WHERE containing_album = ?1")?;
 		let mut rows = stmt.query(&[&id])?;

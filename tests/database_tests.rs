@@ -6,7 +6,7 @@ use test_tools::remove_test_path;
 mod tests
 {
 	use ospl::Library;
-	use ospl::Error;
+	use ospl::OsplError;
 
 	#[test]
 	fn import_and_get()
@@ -45,7 +45,7 @@ mod tests
 		{
 			Err(e) =>
 			{
-				if e != Error::NotFound
+				if e != OsplError::IoError(std::io::ErrorKind::NotFound)
 				{
 					panic!("error: an other error as NotFound is returned")
 				}
@@ -76,7 +76,7 @@ mod tests
 		{
 			Err(e) =>
 			{
-				if e != Error::NotFound
+				if e != OsplError::IoError(std::io::ErrorKind::NotFound)
 				{
 					panic!("error: an other error as NotFound is returned")
 				}

@@ -72,13 +72,13 @@ mod tests
 	#[cfg(target_os = "linux")]
 	fn create_library_no_permissions()
 	{
-		assert_eq!(Library::create(&"/root/library".to_string()).err().unwrap(), Error::Other);
+		assert_eq!(Library::create(&"/root/library".to_string()).err().unwrap(), OsplError::IoError(std::io::ErrorKind::PermissionDenied));
 	}
 
 	#[test]
 	fn create_library_exists()
 	{
-		assert_eq!(Library::create(&TEST_DIR.to_string()).err().unwrap(), Error::Other);
+		assert_eq!(Library::create(&TEST_DIR.to_string()).err().unwrap(), OsplError::IoError(std::io::ErrorKind::AlreadyExists));
 	}
 
 	#[test]

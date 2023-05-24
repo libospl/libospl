@@ -1,4 +1,5 @@
 use crate::Library;
+use crate::OsplError;
 use crate::Error;
 use crate::Database;
 use crate::Album;
@@ -15,13 +16,13 @@ impl Library
 	/// let collection_2030 = library.get_collection_from_id(35).unwrap();
 	/// let album = library.create_album("Summer 2030", "All photos from my 2030 summer", collection_2030.id());
 	/// ```
-	pub fn create_album(&self, name: &str, comment: &str, collection: u32) -> Result<Album, Error>
+	pub fn create_album(&self, name: &str, comment: &str, collection: u32) -> Result<Album, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 
 		if name == ""
 		{
-			return Err(Error::Empty);
+			return Err(OsplError::InternalError(Error::EmptyName));
 		}
 		let collection = self.get_collection_from_id(collection)?;
 		let mut album = Album::new_with_name(name, comment, collection);
@@ -43,7 +44,7 @@ impl Library
 	/// assert_eq!(album.name(), "2019");
 	/// assert_eq!(album.comment(), "");
 	/// ```
-	pub fn get_album_from_id(&self, id: u32) -> Result<Album, Error>
+	pub fn get_album_from_id(&self, id: u32) -> Result<Album, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut album = Album::new();
@@ -63,7 +64,7 @@ impl Library
 	/// let album = library.get_album_from_id(album.id()).unwrap();
 	/// assert_eq!(album.name(), "2020");
 	/// ```
-	pub fn rename_album_with_id(&self, id: u32, new_name: &str) -> Result<(), Error>
+	pub fn rename_album_with_id(&self, id: u32, new_name: &str) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let album = self.get_album_from_id(id)?;
@@ -86,7 +87,7 @@ impl Library
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// assert_eq!(album.collection_id(), 22);
 	/// ```
-	pub fn move_album_by_id(&self, album_id: u32, collection_id: u32) -> Result<(), Error>
+	pub fn move_album_by_id(&self, album_id: u32, collection_id: u32) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let album = self.get_album_from_id(album_id)?;
@@ -100,13 +101,13 @@ impl Library
 	///
 	/// # Example
 	/// ```no_run
-	/// # use ospl::{Library, Error};
+	/// # use ospl::{Library, OsplError};
 	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// library.delete_album_by_id(35);
-	/// assert_eq!(library.get_album_from_id(35).err().unwrap(), Error::NotFound);
+	/// assert_eq!(library.get_album_from_id(35).err().unwrap(), OsplError::IoError(std::io::ErrorKind::NotFound));
 	/// ```
-	pub fn delete_album_by_id(&self, id: u32) -> Result<(), Error>
+	pub fn delete_album_by_id(&self, id: u32) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let album = self.get_album_from_id(id)?;
@@ -126,7 +127,7 @@ impl Library
 	/// 	println!("photo id: {} | name: {}", photo.id(), photo.get_filename());
 	/// }
 	/// ```
-	pub fn list_photos_in_album(&self, album_id: u32) -> Result<Vec<Photo>, Error>
+	pub fn list_photos_in_album(&self, album_id: u32) -> Result<Vec<Photo>, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		<Album as crate::element::traits::InsideElementListing<Photo>>::list_inside(&db, album_id)
@@ -141,7 +142,7 @@ impl Library
 	/// let album = library.get_album_from_id(35).unwrap();
 	/// library.assign_photo_to_album(27, album.id());
 	/// ```
-	pub fn assign_photo_to_album(&self, photo: u32, album: u32) -> Result<(), Error>
+	pub fn assign_photo_to_album(&self, photo: u32, album: u32) -> Result<(), OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let album = self.get_album_from_id(album)?;

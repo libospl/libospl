@@ -39,7 +39,6 @@ pub mod element;
 
 pub mod api;
 
-use std::io::ErrorKind;
 use std::path::PathBuf;
 
 use element::album::Album;
@@ -49,79 +48,77 @@ use element::photo::Photo;
 use element::collection::Collection;
 
 #[derive(Debug, PartialEq)]
-pub enum Error
+pub enum OsplError
 {
-	/// other error
-	Other = -1000,
-	/// the file or folder already exists
-	Exists,
-	/// database communication failed
-	DatabaseError,
-	/// file or element not found
-	NotFound,
-	/// no permission to create or read file
-	PermissionDenied,
-	/// file or element not supported
-	NotSupported,
-	/// file is not an image file
-	NotAnImage,
-	/// A directory was specified when a non-directory was expected.
-	IsADirectory,
-	/// An error related to io
-	IoError,
-	/// Cannot be empty
-	Empty,
+	DatabaseError(rusqlite::Error),
+	IoError(std::io::ErrorKind),
+	InternalError(Error),
 }
 
 #[cfg(not(tarpaulin_include))]
-impl From<rusqlite::Error> for Error
+impl std::fmt::Display for OsplError
 {
-	fn from(error: rusqlite::Error) -> Self
-	{
-		match error
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match self
 		{
-			rusqlite::Error::SqliteFailure(error, _) => match error.code
-			{
-				_ => Error::DatabaseError,
-			},
-			rusqlite::Error::QueryReturnedNoRows => Error::DatabaseError,
-			_ => Error::DatabaseError,
+			OsplError::DatabaseError(e) => write!(f, "Database error: {}", e),
+			OsplError::IoError(e) => write!(f, "IO error: {}", e),
+			OsplError::InternalError(e) => write!(f, "Internal error: {:?}", e),
 		}
 	}
 }
 
 #[cfg(not(tarpaulin_include))]
-impl From<std::io::Error> for Error
-{
-	fn from(error: std::io::Error) -> Self
-	{
-		match error.kind()
-		{
-			ErrorKind::AlreadyExists => Error::Exists,
-			ErrorKind::PermissionDenied => Error::PermissionDenied,
-			e =>
-			{
-				println!("error: {}", e);
-				Error::IoError
-			},
-		}
-	}
-}
-
-#[cfg(not(tarpaulin_include))]
-impl From<image::ImageError> for Error
+impl From<image::ImageError> for OsplError
 {
 	fn from(error: image::ImageError) -> Self
 	{
 		match error
 		{
-			image::ImageError::Unsupported(_) => Error::NotSupported,
-			image::ImageError::IoError(_) => Error::Other,
-			image::ImageError::Decoding(_) => Error::NotAnImage,
-			image::ImageError::Limits(_) => Error::Other,
-			_ => Error::Other,
+			image::ImageError::Unsupported(_) => OsplError::IoError(std::io::ErrorKind::Unsupported),
+			image::ImageError::IoError(e) => OsplError::IoError(e.kind()),
+			image::ImageError::Decoding(_) => OsplError::InternalError(Error::NotAnImage),
+			image::ImageError::Limits(_) => OsplError::IoError(std::io::ErrorKind::OutOfMemory),
+			_ => OsplError::InternalError(Error::Other),
 		}
 	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl From<Error> for OsplError
+{
+	fn from(err: Error) -> Self {
+		OsplError::InternalError(err)
+	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl From<rusqlite::Error> for OsplError
+{
+	fn from(err: rusqlite::Error) -> Self {
+		OsplError::DatabaseError(err)
+	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl From<std::io::Error> for OsplError
+{
+	fn from(err: std::io::Error) -> Self {
+		OsplError::IoError(err.kind())
+	}
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Error
+{
+	/// other error
+	Other = -1000,
+	/// The file is not supported by the library
+	NotAnImage,
+	/// A directory was specified when a non-directory was expected.
+	IsADirectory,
+	/// No name was specified
+	EmptyName,
 }
 
 #[derive(Debug)]

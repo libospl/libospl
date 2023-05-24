@@ -7,6 +7,7 @@ mod tests
 {
 	use ospl::Library;
 	use ospl::Error;
+	use ospl::OsplError;
 
 	#[test]
 	fn create_album()
@@ -64,7 +65,7 @@ mod tests
 	{
 		let path = super::generate_test_path();
 		let library = Library::create(&path).unwrap();
-		assert_eq!(library.get_album_from_id(35).err().unwrap(), Error::NotFound);
+		assert_eq!(library.get_album_from_id(35).err().unwrap(), OsplError::IoError(std::io::ErrorKind::NotFound));
 		super::remove_test_path(path);
 	}
 
@@ -77,7 +78,7 @@ mod tests
 		let album = library.create_album("Pizza", "My pizza party from 2019", collection.id()).unwrap();
 		library.delete_album_by_id(album.id()).unwrap();
 		assert!(!std::path::Path::new(&library.get_path().join("collections").join("2019").join("Pizza")).exists());
-		assert_eq!(library.get_album_from_id(1).err().unwrap(), Error::NotFound);
+		assert_eq!(library.get_album_from_id(1).err().unwrap(), OsplError::IoError(std::io::ErrorKind::NotFound));
 		super::remove_test_path(path);
 	}
 
@@ -135,7 +136,7 @@ mod tests
 		let library = Library::create(&path).unwrap();
 		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
 		let album = library.create_album("", "", collection.id());
-		assert_eq!(album.err().unwrap(), Error::Empty);
+		assert_eq!(album.err().unwrap(), OsplError::InternalError(Error::EmptyName));
 		super::remove_test_path(path);
 	}
 

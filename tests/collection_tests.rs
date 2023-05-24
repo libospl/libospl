@@ -6,7 +6,7 @@ use test_tools::remove_test_path;
 mod tests
 {
 	use ospl::Library;
-	use ospl::Error;
+	use ospl::OsplError;
 
 	#[test]
 	fn create_collection()
@@ -35,7 +35,7 @@ mod tests
 		{
 			Err(e) =>
 			{
-				if e != Error::NotFound
+				if e != OsplError::IoError(std::io::ErrorKind::NotFound)
 				{
 					panic!("error: an other error as NotFound is returned")
 				}
@@ -87,7 +87,7 @@ mod tests
 		assert!(std::path::Path::new(&library.get_path().join("collections").join("name")).exists());
 		library.delete_collection_by_id(1).unwrap();
 		assert!(!std::path::Path::new(&library.get_path().join("collections").join("name")).exists());
-		assert_eq!(library.get_collection_from_id(1).err().unwrap(), Error::NotFound);
+		assert_eq!(library.get_collection_from_id(1).err().unwrap(), OsplError::IoError(std::io::ErrorKind::NotFound));
 		super::remove_test_path(path);
 	}
 }
