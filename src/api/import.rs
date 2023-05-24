@@ -24,7 +24,7 @@ impl Library
 		{
 			return Err(OsplError::IoError(std::io::ErrorKind::NotFound));
 		}
-		let mut photo = Photo::new();
+		let mut photo = Photo::default();
 		photo.from_file(&db, &photo_path)?;
 		let id = db.insert(&photo)?;
 		self.fs.insert(&photo)?;

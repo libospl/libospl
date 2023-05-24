@@ -45,6 +45,13 @@ pub struct Photo
 	path_on_fs:			PathBuf,
 }
 
+impl Default for Photo
+{
+	fn default() -> Self
+	{
+		Photo::new()
+	}
+}
 // Constructors
 impl Photo
 {

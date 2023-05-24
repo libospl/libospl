@@ -64,7 +64,7 @@ impl Library
 	pub fn get_collection_from_id(&self, id: u32) -> Result<Collection, OsplError>
 	{
 		let db = Database::new(self.fs.database_path())?;
-		let mut collection = Collection::new();
+		let mut collection = Collection::default();
 		db.from_id(&mut collection, id)?;
 		Ok(collection)
 	}
