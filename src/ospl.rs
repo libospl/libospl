@@ -108,7 +108,7 @@ impl From<std::io::Error> for OsplError
 	}
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error
 {
 	/// other error
