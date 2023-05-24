@@ -66,9 +66,9 @@ impl Database
 	/// Gets an element from the database with its id
 	///
 	/// If db.from_id(object) is called, it will call object.from_id(database struct)
-	pub(crate) fn from_id(&self, object: &mut dyn ElementDatabase, id: u32) -> Result<(), OsplError>
+	pub(crate) fn load_from_id(&self, object: &mut dyn ElementDatabase, id: u32) -> Result<(), OsplError>
 	{
-		object.from_id(self, id)
+		object.load_from_id(self, id)
 	}
 
 	/// Rename the element in the database

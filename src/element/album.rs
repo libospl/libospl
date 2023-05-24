@@ -147,7 +147,7 @@ impl ElementDatabase for Album
 		Ok(())
 	}
 
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
+	fn load_from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		// fill self with the albums table from the database with the id
 		let mut stmt = db.connection.prepare("SELECT * FROM albums WHERE id = ?1")?;
@@ -160,7 +160,7 @@ impl ElementDatabase for Album
 			self.comment = row.get(2)?;
 			self.creation_datetime = row.get(3)?;
 			self.modification_datetime = row.get(4)?;
-			db.from_id(&mut self.collection, row.get(5)?)?;
+			db.load_from_id(&mut self.collection, row.get(5)?)?;
 		}
 		
 		if self.id == 0
@@ -248,7 +248,7 @@ impl InsideElementListing<Photo> for Album
 		while let Some(row) = rows.next()?
 		{
 			let mut photo = Photo::default();
-			db.from_id(&mut photo, row.get(0)?)?;
+			db.load_from_id(&mut photo, row.get(0)?)?;
 			photos.push(photo);
 		}
 		Ok(photos)

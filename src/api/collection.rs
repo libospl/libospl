@@ -65,7 +65,7 @@ impl Library
 	{
 		let db = Database::new(self.fs.database_path())?;
 		let mut collection = Collection::default();
-		db.from_id(&mut collection, id)?;
+		db.load_from_id(&mut collection, id)?;
 		Ok(collection)
 	}
 

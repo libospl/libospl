@@ -149,7 +149,7 @@ impl ElementDatabase for Photo
 	}
 
 	/// loads the photo object with data from db with its id
-	fn from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
+	fn load_from_id(&mut self, db: &Database, id: u32) -> Result<(), OsplError>
 	{
 		let mut stmt = db.connection.prepare("SELECT * FROM photos WHERE id = ?1")?;
 		let mut rows = stmt.query([&id])?;
