@@ -87,7 +87,8 @@ impl From<image::ImageError> for OsplError
 #[cfg(not(tarpaulin_include))]
 impl From<Error> for OsplError
 {
-	fn from(err: Error) -> Self {
+	fn from(err: Error) -> Self
+	{
 		OsplError::InternalError(err)
 	}
 }
@@ -95,7 +96,8 @@ impl From<Error> for OsplError
 #[cfg(not(tarpaulin_include))]
 impl From<rusqlite::Error> for OsplError
 {
-	fn from(err: rusqlite::Error) -> Self {
+	fn from(err: rusqlite::Error) -> Self
+	{
 		OsplError::DatabaseError(err)
 	}
 }
