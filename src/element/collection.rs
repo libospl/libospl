@@ -99,6 +99,15 @@ impl Collection
 	/* TODO: Implement a from_folder function for importing. */
 }
 
+impl Collection
+{
+	pub(crate) fn update_comment(&mut self, db: &Database, comment: &str) -> Result<(), OsplError>
+	{
+		db.connection.execute("UPDATE collections SET comment = ?1 WHERE id = ?2", (comment, &self.id))?;
+		Ok(())
+	}
+}
+
 impl ElementDatabase for Collection
 {
 	fn delete(&self, db: &Database) -> Result<(), OsplError>
@@ -109,6 +118,10 @@ impl ElementDatabase for Collection
 
 	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>
 	{
+		if self.name.is_empty()
+		{
+			return Err(OsplError::InternalError(crate::Error::EmptyName));
+		}
 		db.connection.execute("INSERT INTO collections (name, comment, creation_datetime, modification_datetime) VALUES (?1, ?2, ?3, ?4)",
 		(&self.name, &self.comment, &self.creation_datetime, &self.modification_datetime))?;
 		Ok(db.connection.last_insert_rowid() as u32)
@@ -116,6 +129,10 @@ impl ElementDatabase for Collection
 
 	fn rename(&self, db: &Database, new_name: &str) -> Result<(), OsplError>
 	{
+		if new_name.is_empty()
+		{
+			return Err(OsplError::InternalError(crate::Error::EmptyName));
+		}
 		db.connection.execute("UPDATE collections SET name = ?1 WHERE id = ?2", (new_name, &self.id))?;
 		Ok(())
 	}
@@ -199,6 +216,10 @@ impl ElementFilesystem for Collection
 {
 	fn insert_into(&self, fs: &Filesystem) -> Result<(), OsplError>
 	{
+		if self.name.is_empty()
+		{
+			return Err(OsplError::InternalError(crate::Error::EmptyName));
+		}
 		let path = fs.collections_path().join(&self.name);
 		std::fs::create_dir(path)?;
 		Ok(())
@@ -211,6 +232,10 @@ impl ElementFilesystem for Collection
 
 	fn rename(&self, fs: &Filesystem, new_name: &str) -> Result<(), OsplError>
 	{
+		if new_name.is_empty()
+		{
+			return Err(OsplError::InternalError(crate::Error::EmptyName));
+		}
 		let path_old = fs.collections_path().join(self.name());
 		let path_new = fs.collections_path().join(new_name);
 		Ok(std::fs::rename(path_old, path_new)?)

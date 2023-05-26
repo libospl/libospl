@@ -26,6 +26,43 @@ mod tests
 	}
 
 	#[test]
+	fn create_collection_duplicate()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		match library.create_collection("2019", "Photos from 2019") {
+			Ok(collection) =>
+			{
+				assert_eq!(1, collection.id());
+				assert_eq!("2019", collection.name());
+				assert_eq!("Photos from 2019", collection.comment());
+			},
+			Err(err) => {panic!("Error creating collection: {:?}", err)}
+		};
+		let e = library.create_collection("2019", "Photos from 2019").unwrap_err();
+		if let rusqlite::Error::SqliteFailure(rc, _) = e.into()
+		{
+			assert_eq!(rc.code, rusqlite::ErrorCode::ConstraintViolation);
+		}
+		else
+		{
+			panic!("error: should return a ConstraintViolation")
+		}
+		super::remove_test_path(path);
+	}
+
+
+	#[test]
+	fn create_collection_empty_name()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		assert_eq!(library.create_collection("", "Photos from 2019").unwrap_err(), OsplError::InternalError(ospl::Error::EmptyName));
+		super::remove_test_path(path);
+	}
+
+
+	#[test]
 	fn get_id_not_exist()
 	{
 		let path = super::generate_test_path();
@@ -75,6 +112,20 @@ mod tests
 		assert_eq!("Birds", collection.name());
 		assert!(std::path::Path::new(&library.get_path().join("collections").join("Birds")).exists());
 		assert!(!std::path::Path::new(&library.get_path().join("collections").join("Bird")).exists());
+		super::remove_test_path(path);
+	}
+
+	#[test]
+	fn rename_collection_empty()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("Bird", "Contains my best bird pics").unwrap();
+		assert_eq!("Bird", collection.name());
+		assert_eq!(library.rename_collection_with_id(collection.id(), "").unwrap_err(), OsplError::InternalError(ospl::Error::EmptyName));
+		let collection = library.get_collection_from_id(collection.id()).unwrap();
+		assert_eq!("Bird", collection.name());
+		assert!(std::path::Path::new(&library.get_path().join("collections").join("Bird")).exists());
 		super::remove_test_path(path);
 	}
 
