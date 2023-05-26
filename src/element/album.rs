@@ -195,14 +195,14 @@ impl ElementFilesystem for Album
 // Specific Filesystem functions
 impl Album
 {
-	pub fn move_to(&self, fs: &Filesystem, collection: &Collection) -> Result<(), OsplError>
+	pub(crate) fn move_to(&self, fs: &Filesystem, collection: &Collection) -> Result<(), OsplError>
 	{
 		let path_old = self.get_collection_path(fs).join(self.name());
 		let path_new = fs.collections_path().join(collection.name()).join(self.name());
 		Ok(std::fs::rename(path_old, path_new)?)
 	}
 
-	pub fn add(&self, fs: &Filesystem, photo: &Photo) -> Result<(), OsplError>
+	pub(crate) fn add(&self, fs: &Filesystem, photo: &Photo) -> Result<(), OsplError>
 	{
 		let photo_path = fs.pictures_path().join(photo.get_filename());
 		let link_path = fs.collections_path()
@@ -215,12 +215,25 @@ impl Album
 		}
 		Ok(())
 	}
+
+	pub(crate) fn remove(&self, fs: &Filesystem, photo: &Photo) -> Result<(), OsplError>
+	{
+		let link_path = fs.collections_path()
+									.join(self.collection.name())
+									.join(self.name())
+									.join(photo.get_filename());
+		if !link_path.exists()
+		{
+			std::fs::remove_file(link_path)?;
+		}
+		Ok(())
+	}
 }
 
 // Specific Database functions
 impl Album
 {
-	pub fn assign_to(&self, db: &Database, collection: &Collection) -> Result<(), OsplError>
+	pub(crate) fn assign_to(&self, db: &Database, collection: &Collection) -> Result<(), OsplError>
 	{
 		if self.collection.id() == collection.id()
 		{
@@ -230,10 +243,23 @@ impl Album
 		Ok(())
 	}
 
-	pub fn put(&self, db: &Database, photo: &Photo) -> Result<(), OsplError>
+	pub(crate) fn assign(&self, db: &Database, photo: &Photo) -> Result<(), OsplError>
 	{
 		db.connection.execute("INSERT INTO photos_albums_map (containing_album, contained_photo) VALUES (?1, ?2)",
 		(self.id(), photo.id))?;
+		Ok(())
+	}
+
+	pub(crate) fn unassign(&self, db: &Database, photo: &Photo) -> Result<(), OsplError>
+	{
+		db.connection.execute("DELETE FROM photos_albums_map WHERE containing_album = ?1 AND contained_photo = ?2",
+		(self.id(), photo.id))?;
+		Ok(())
+	}
+	
+	pub(crate) fn update_comment(&self, db: &Database, comment: &str) -> Result<(), OsplError>
+	{
+		db.connection.execute("UPDATE albums SET comment = ?1 WHERE id = ?2", (comment, &self.id))?;
 		Ok(())
 	}
 }
