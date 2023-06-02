@@ -87,7 +87,8 @@ impl From<image::ImageError> for OsplError
 #[cfg(not(tarpaulin_include))]
 impl From<Error> for OsplError
 {
-	fn from(err: Error) -> Self {
+	fn from(err: Error) -> Self
+	{
 		OsplError::InternalError(err)
 	}
 }
@@ -95,8 +96,49 @@ impl From<Error> for OsplError
 #[cfg(not(tarpaulin_include))]
 impl From<rusqlite::Error> for OsplError
 {
-	fn from(err: rusqlite::Error) -> Self {
+	fn from(err: rusqlite::Error) -> Self
+	{
 		OsplError::DatabaseError(err)
+	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl Into<std::io::ErrorKind> for OsplError
+{
+	fn into(self) -> std::io::ErrorKind
+	{
+		match self
+		{
+			OsplError::IoError(e) => e,
+			_ => panic!("Cannot convert OsplError into std::io::ErrorKind"),
+		}
+	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl Into<rusqlite::Error> for OsplError
+{
+	fn into(self) -> rusqlite::Error
+	{
+		
+		match self
+		{
+			OsplError::DatabaseError(e) => e,
+			_ => panic!("Cannot convert OsplError into rusqlite::Error"),
+		}
+	}
+}
+
+#[cfg(not(tarpaulin_include))]
+impl Into<Error> for OsplError
+{
+	fn into(self) -> Error
+	{
+		match self
+		{
+			OsplError::InternalError(e) => e,
+			_ => panic!("Cannot convert OsplError into ospl::Error"),
+		}
 	}
 }
 

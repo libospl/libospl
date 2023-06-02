@@ -147,8 +147,61 @@ impl Library
 		let db = Database::new(self.fs.database_path())?;
 		let album = self.get_album_from_id(album)?;
 		let photo = self.get_photo_from_id(photo)?;
-		album.put(&db, &photo)?;
+		album.assign(&db, &photo)?;
 		album.add(&self.fs, &photo)?;
 		Ok(())
 	}
+
+	/// Unassign a photo from an album
+	///
+	/// # Example
+	/// ```no_run
+	/// # use ospl::{Library, Error};
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let album = library.get_album_from_id(35).unwrap();
+	/// library.assign_photo_to_album(27, album.id());
+	/// ```
+	pub fn unassign_photo_from_album(&self, photo: u32, album: u32) -> Result<(), OsplError>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(album)?;
+		let photo = self.get_photo_from_id(photo)?;
+		album.unassign(&db, &photo)?;
+		album.remove(&self.fs, &photo)?;
+		Ok(())
+	}
+
+	/// Move a photo from an album to another
+	/// # Example
+	/// ```no_run
+	/// # use ospl::{Library, Error};
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let album_old = 35;
+	/// let album_new = 36;
+	/// let album_old = library.get_album_from_id(album_old).unwrap();
+	/// let album_new = library.get_album_from_id(album_new).unwrap();
+	/// library.move_photo_to_album(27, album_old.id(), album_new.id());
+	/// ```
+	pub fn move_photo_to_album(&self, photo: u32, old_album: u32, new_album: u32) -> Result<(), OsplError>
+	{
+		self.unassign_photo_from_album(photo, old_album)?;
+		self.assign_photo_to_album(photo, new_album)?;
+		Ok(())
+	}
+
+	/// Change album comment
+	/// # Example
+	/// ```no_run
+	/// # use ospl::{Library, Error};
+	/// let library = Library::load("/my/awesome/path.ospl/").unwrap();
+	/// let album = library.get_album_from_id(35).unwrap();
+	/// library.change_album_comment(album.id(), "new comment");
+	/// ```
+	pub fn change_album_comment(&self, album_id: u32, comment: &str) -> Result<(), OsplError>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let album = self.get_album_from_id(album_id)?;
+		album.update_comment(&db, comment)
+	}
+
 }
