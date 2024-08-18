@@ -53,6 +53,7 @@ pub enum OsplError
 	DatabaseError(rusqlite::Error),
 	IoError(std::io::ErrorKind),
 	InternalError(Error),
+	ErrorWithMessage(String),
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -64,6 +65,7 @@ impl std::fmt::Display for OsplError
 			OsplError::DatabaseError(e) => write!(f, "Database error: {}", e),
 			OsplError::IoError(e) => write!(f, "IO error: {}", e),
 			OsplError::InternalError(e) => write!(f, "Internal error: {:?}", e),
+			OsplError::ErrorWithMessage(msg) => write!(f, "Internal error: {}", msg),
 		}
 	}
 }
@@ -120,7 +122,6 @@ impl Into<rusqlite::Error> for OsplError
 {
 	fn into(self) -> rusqlite::Error
 	{
-		
 		match self
 		{
 			OsplError::DatabaseError(e) => e,
