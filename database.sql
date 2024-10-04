@@ -28,11 +28,13 @@ CREATE TABLE IF NOT EXISTS photos (
 	exposure_time			TEXT,
 	exposure_mode			INTEGER,
 	sensitivity				INTEGER,
-	flash					INTEGER,
-	metering_mode			INTEGER,
+	flash					BOOL,
 	title					TEXT,
-	comment					TEXT,
-	-- Image position: TODO: Research this
+	latitude				REAL,
+	longitude				REAL,
+
+	exif_data				BLOB,
+
 	-- Key configuration
 	PRIMARY KEY(id AUTOINCREMENT)
 );
@@ -80,4 +82,3 @@ CREATE TABLE IF NOT EXISTS photos_tags_map (
 	FOREIGN KEY(contained_photo) REFERENCES photos(id),
 	FOREIGN KEY(containing_tag) REFERENCES tags(id)
 );
-

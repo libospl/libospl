@@ -71,6 +71,25 @@ impl std::fmt::Display for OsplError
 }
 
 #[cfg(not(tarpaulin_include))]
+impl From <exif::Error> for OsplError
+{
+	fn from (error: exif::Error) -> Self {
+		match error
+		{
+			exif::Error::InvalidFormat(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			exif::Error::Io(e) => OsplError::IoError(e.kind()),
+			exif::Error::NotFound(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			exif::Error::BlankValue(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			exif::Error::TooBig(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			exif::Error::NotSupported(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			exif::Error::UnexpectedValue(e) => OsplError::ErrorWithMessage(format!("Error while parsing exif: {}", e)),
+			_ => OsplError::InternalError(Error::Other),
+		}
+	}
+}
+
+
+#[cfg(not(tarpaulin_include))]
 impl From<image::ImageError> for OsplError
 {
 	fn from(error: image::ImageError) -> Self

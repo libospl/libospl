@@ -17,6 +17,7 @@ infer = "0.13.0"
 chrono = "0.4.23"
 image = "0.24.5"
 log = "0.4.17"
+kamadak-exif = "0.5.5"
 
 [dependencies.xxhash-rust]
 version = "0.8.6"

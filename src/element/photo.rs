@@ -20,15 +20,36 @@
 
 use crate::element::traits::ElementDatabase;
 use crate::element::traits::ElementFilesystem;
+use crate::element::traits::ElementListing;
 use crate::Database;
 use crate::Filesystem;
 use crate::{Error, OsplError};
-use crate::element::traits::ElementListing;
+
+use exif::Exif;
+use exif::{In, Tag};
 
 use chrono::naive::NaiveDateTime;
 use xxhash_rust::xxh3::xxh3_128;
 
 use std::path::{Path, PathBuf};
+
+/// Structure containing exif data
+#[derive(Debug, PartialEq, Clone)]
+pub struct ExifData
+{
+	pub make:			Option<String>,
+	pub model:			Option<String>,
+	pub lens:			Option<String>,
+	pub aperture:		Option<f32>,
+	pub focal_length:	Option<f32>,
+	pub exposure_time:	Option<String>,
+	pub exposure_mode:	Option<u16>,
+	pub sensitivity:	Option<i32>,
+	pub flash:			Option<bool>,
+	pub title:			Option<String>,
+	pub latitude:		Option<f64>,
+	pub longitude:		Option<f64>,
+}
 
 /// Structure containing a replica of sqlite data
 #[derive(Debug)]
@@ -41,6 +62,22 @@ pub struct Photo
 	import_datetime:	Option<NaiveDateTime>,
 	rating:				u32,
 	starred:			bool,
+
+	// Exifs
+	make:				Option<String>,
+	model:				Option<String>,
+	lens:				Option<String>,
+	aperture:			Option<f32>,
+	focal_length:		Option<f32>,
+	exposure_time:		Option<String>,
+	exposure_mode:		Option<u16>,
+	sensitivity:		Option<i32>,
+	flash:				Option<bool>,
+	title:				Option<String>,
+	latitude:			Option<f64>,
+	longitude:			Option<f64>,
+	//Exif blob
+	exif_data:			Option<Vec<u8>>,
 
 	path_on_fs:			PathBuf,
 }
@@ -67,8 +104,123 @@ impl Photo
 			rating:				0,
 			starred:			false,
 
+			make:				None,
+			model:				None,
+			lens:				None,
+			aperture:			None,
+			focal_length:		None,
+			exposure_time:		None,
+			exposure_mode:		None,
+			sensitivity:		None,
+			flash:				None,
+			title:				None,
+			latitude:			None,
+			longitude:			None,
+			exif_data:			None,
+
 			path_on_fs:			Path::new("").to_path_buf(),
 		}
+	}
+
+	fn import_exif(&mut self, exif: Exif)
+	{
+		self.exif_data = Some(exif.buf().into());
+
+		let make = exif.get_field(Tag::Make, In::PRIMARY);
+
+		if let Some(make) = make
+		{
+			self.make = Some(make.display_value().to_string().replace("\"", ""));
+		}
+		println!("imported exif: make: {:?}", self.make);
+
+		let model = exif.get_field(Tag::Model, In::PRIMARY);
+		if let Some(model) = model
+		{
+			self.model = Some(model.display_value().to_string().replace("\"", ""));
+		}
+		println!("imported exif: model: {:?}", self.model);
+
+		let lens = exif.get_field(Tag::LensModel, In::PRIMARY);
+		if let Some(lens) = lens
+		{
+			self.lens = Some(lens.display_value().to_string().replace("\"", ""));
+		}
+		println!("imported exif: lens: {:?}", self.lens);
+
+		let aperture = exif.get_field(Tag::ApertureValue, In::PRIMARY);
+		if let Some(aperture) = aperture
+		{
+			self.aperture = aperture.display_value().to_string().parse().ok();
+		}
+		println!("imported exif: aperture: {:?}", self.aperture);
+
+		let focal_length = exif.get_field(Tag::FocalLength, In::PRIMARY);
+		if let Some(focal_length) = focal_length
+		{
+			self.focal_length = focal_length.display_value().to_string().parse().ok();
+		}
+		println!("imported exif: focal_length: {:?}", self.focal_length);
+
+		let exposure_time = exif.get_field(Tag::ExposureTime, In::PRIMARY);
+		if let Some(exposure_time) = exposure_time
+		{
+			self.exposure_time = Some(exposure_time.display_value().to_string().replace("\"", ""));
+		}
+		println!("imported exif: exposure_time: {:?}", self.exposure_time);
+
+		let exposure_mode = exif.get_field(Tag::ExposureMode, In::PRIMARY);
+		if let Some(exposure_mode) = exposure_mode
+		{
+			self.exposure_mode = match exposure_mode.value.clone() {
+				exif::Value::Short(v) => v.first().copied(),
+				_ => None,
+			};
+		}
+		println!("imported exif: exposure_mode: {:?}", self.exposure_mode);
+
+		let sensitivity = exif.get_field(Tag::ISOSpeed, In::PRIMARY);
+		if let Some(sensitivity) = sensitivity
+		{
+			self.sensitivity = sensitivity.display_value().to_string().parse().ok();
+		}
+		println!("imported exif: sensitivity: {:?}", self.sensitivity);
+
+		let flash = exif.get_field(Tag::Flash, In::PRIMARY);
+		if let Some(flash) = flash
+		{
+			self.flash = match flash.value.clone() {
+				exif::Value::Short(v) => {
+					match v.first() {
+						Some(v) => Some((v & 1) != 0),
+						None => None,
+					}
+				},
+				_ => None,
+			};
+		}
+		println!("imported exif: flash: {:?}", self.flash);
+
+		let title = exif.get_field(Tag::ImageDescription, In::PRIMARY);
+		if let Some(title) = title
+		{
+			self.title = Some(title.display_value().to_string().replace("\"", ""));
+		}
+		println!("imported exif: title: {:?}", self.title);
+
+		let latitude = exif.get_field(Tag::GPSLatitude, In::PRIMARY);
+		if let Some(latitude) = latitude
+		{
+			self.latitude = Some(latitude.display_value().to_string().parse().unwrap());
+		}
+		println!("imported exif: latitude: {:?}", self.latitude);
+
+		let longitude = exif.get_field(Tag::GPSLongitude, In::PRIMARY);
+		if let Some(longitude) = longitude
+		{
+			self.longitude = Some(longitude.display_value().to_string().parse().unwrap());
+		}
+		println!("imported exif: longitude: {:?}", self.longitude);
 	}
 
 	/// Gets data from an image file and fills self with basic data:
@@ -88,10 +240,22 @@ impl Photo
 			return Err(OsplError::InternalError(Error::NotAnImage));
 		}
 		self.filename = get_filename_from(&photo_path);
-		self.hash = xxh3_128(&std::fs::read(&photo_path)?);
+		let file = std::fs::read(&photo_path)?;
+		self.hash = xxh3_128(&file);
+
+		let file = std::fs::File::open(&photo_path)?;
+		let mut bufreader = std::io::BufReader::new(&file);
+		let exifreader = exif::Reader::new();
+		let exif = exifreader.read_from_container(&mut bufreader);
+
+		if let Ok(exif) = exif
+		{
+			self.import_exif(exif);
+		}
+
 		self.import_datetime = Some(chrono::offset::Local::now().naive_local());
 		self.path_on_fs = photo_path.as_ref().to_path_buf();
-		println!("import from file:\n{:#?}", &self);
+		println!("import from file:\n{:#?}", &self.filename);
 		Ok(())
 	}
 }
@@ -107,6 +271,28 @@ impl Photo
 	{
 		self.filename.clone()
 	}
+
+	pub fn get_exifs(&self) -> ExifData {
+		ExifData {
+			make: self.make.clone(),
+			model: self.model.clone(),
+			lens: self.lens.clone(),
+			aperture: self.aperture,
+			focal_length: self.focal_length,
+			exposure_time: self.exposure_time.clone(),
+			exposure_mode: self.exposure_mode,
+			sensitivity: self.sensitivity,
+			flash: self.flash,
+			title: self.title.clone(),
+			latitude: self.latitude,
+			longitude: self.longitude,
+		}
+	}
+
+	pub fn get_raw_exif(&self) -> Option<Vec<u8>> {
+		self.exif_data.clone()
+	}
+
 }
 
 impl Photo // Private function only useful to the local functions
@@ -137,8 +323,8 @@ impl ElementDatabase for Photo
 	/// Insert a photo into the database, returns the id of it.
 	fn insert_into(&self, db: &Database) -> Result<u32, OsplError>
 	{
-		db.connection.execute("INSERT INTO photos (filename, hash, import_datetime) VALUES (?1, ?2, ?3)",
-		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime))?;
+		db.connection.execute("INSERT INTO photos (filename, hash, import_datetime, make, model, lens, aperture, focal_length, exposure_time, exposure_mode, sensitivity, flash, title, latitude, longitude, exif_data ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
+		(&self.filename, &self.hash.to_ne_bytes(), &self.import_datetime, &self.make, &self.model, &self.lens, &self.aperture, &self.focal_length, &self.exposure_time, &self.exposure_mode, &self.sensitivity, &self.flash, &self.title, &self.latitude, &self.longitude, &self.exif_data))?;
 		Ok(db.connection.last_insert_rowid() as u32)
 	}
 
@@ -159,6 +345,22 @@ impl ElementDatabase for Photo
 			self.filename = row.get(1)?;
 			self.hash = u128::from_ne_bytes(row.get(2)?);
 			self.import_datetime = row.get(4)?;
+
+			self.rating = row.get(10)?;
+			self.starred = row.get(11)?;
+			self.make = row.get(12)?;
+			self.model = row.get(13)?;
+			self.lens = row.get(14)?;
+			self.aperture = row.get(15)?;
+			self.focal_length = row.get(16)?;
+			self.exposure_time = row.get(17)?;
+			self.exposure_mode = row.get(18)?;
+			self.sensitivity = row.get(19)?;
+			self.flash = row.get(20)?;
+			self.title = row.get(21)?;
+			self.latitude = row.get(22)?;
+			self.longitude = row.get(23)?;
+			self.exif_data = row.get(24)?;
 		}
 		if self.id == 0
 		{
@@ -229,6 +431,20 @@ impl ElementListing<Photo> for Photo
 				rating:				row.get(10)?,
 				starred:			row.get(11)?,
 
+				make:				row.get(12).ok(),
+				model:				row.get(13).ok(),
+				lens:				row.get(14).ok(),
+				aperture:			row.get(15).ok(),
+				focal_length:		row.get(16).ok(),
+				exposure_time:		row.get(17).ok(),
+				exposure_mode:		row.get(18).ok(),
+				sensitivity:		row.get(19).ok(),
+				flash:				row.get(20).ok(),
+				title:				row.get(22).ok(),
+				latitude:			row.get(23).ok(),
+				longitude:			row.get(24).ok(),
+				exif_data:			row.get(25).ok(),
+
 				path_on_fs:			Path::new("").to_path_buf(),
 			};
 			photos.push(photo);
@@ -253,6 +469,20 @@ impl ElementListing<(u32, PathBuf)> for Photo
 				import_datetime:	row.get(4)?,
 				rating:				row.get(10)?,
 				starred:			row.get(11)?,
+
+				make:				None,
+				model:				None,
+				lens:				None,
+				aperture:			None,
+				focal_length:		None,
+				exposure_time:		None,
+				exposure_mode:		None,
+				sensitivity:		None,
+				flash:				None,
+				title:				None,
+				latitude:			None,
+				longitude:			None,
+				exif_data:			None,
 
 				path_on_fs:			Path::new("").to_path_buf(),
 			};
