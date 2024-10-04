@@ -91,4 +91,32 @@ mod tests
 		}
 		super::remove_test_path(path);
 	}
+
+	#[test]
+	fn import_photo_into_album()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
+		let album = library.create_album("test", "", collection.id()).unwrap();
+		let photo = library.import_photo_into_album("tests/files/test_photo_light.jpg", album.id()).unwrap();
+		let photo = library.get_photo_from_id(photo).unwrap();
+		assert!(std::path::Path::new(&library.get_path().join("collections").join("2019").join("test")).join(photo.get_filename()).exists());
+		super::remove_test_path(path);
+	}
+
+	#[test]
+	fn import_folder_into_album()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
+		let album = library.create_album("test", "", collection.id()).unwrap();
+		let results = library.import_folder_into_album("tests/files/album_of_photos/", album.id()).unwrap();
+		for photo in results
+		{
+			assert!(std::path::Path::new(&library.get_path().join("collections").join("2019").join("test")).join(library.get_photo_from_id(photo.unwrap()).unwrap().get_filename()).exists());
+		}
+		super::remove_test_path(path);
+	}
 }

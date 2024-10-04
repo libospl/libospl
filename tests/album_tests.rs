@@ -30,6 +30,26 @@ mod tests
 	}
 
 	#[test]
+	fn create_album_from_folder()
+	{
+		let path = super::generate_test_path();
+		let library = Library::create(&path).unwrap();
+		let collection = library.create_collection("2019", "Photos from 2019").unwrap();
+		match library.create_album("Pizza Party", "My pizza party from 2019", collection.id())
+		{
+			Ok(album) =>
+			{
+				assert_eq!(1, album.id());
+				assert_eq!("Pizza Party", album.name());
+				assert_eq!("My pizza party from 2019", album.comment());
+				assert!(std::path::Path::new(&library.get_path().join("collections").join("2019").join("Pizza Party")).exists());
+			},
+			Err(err) => {panic!("Error creating album: {:?}", err)}
+		}
+		super::remove_test_path(path);
+	}
+
+	#[test]
 	fn get_album()
 	{
 		let path = super::generate_test_path();
@@ -172,7 +192,7 @@ fn assign_photo_to_album_twice()
 	library.assign_photo_to_album(photo.id(), album.id()).unwrap();
 	library.assign_photo_to_album(photo.id(), album.id()).unwrap();
 	assert!(std::path::Path::new(&library.get_path().join("collections").join("2019").join("test")).join(photo.get_filename()).exists());
-	// super::remove_test_path(path);
+	super::remove_test_path(path);
 	}
 
 	#[test]

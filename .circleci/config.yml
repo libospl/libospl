@@ -4,14 +4,14 @@ orbs:
 jobs:
   build-linux:
     docker:
-      - image: cimg/rust:1.65.0
+      - image: cimg/rust:1.81
     steps:
       - checkout
       - run: cargo clippy
       - run: cargo test
   build-release:
     docker:
-      - image: cimg/rust:1.65.0
+      - image: cimg/rust:1.81
     steps:
       - checkout
       - run: cargo test --release
@@ -49,7 +49,7 @@ jobs:
           keys:
             - choco-cache-1
       - run: choco install rust -y
-      - run: choco install mingw -y
+      - run: choco install -y mingw --version 12.2.0.03042023 --allow-downgrade
       - run: cargo fetch
       - save_cache:
           key: choco-cache-1

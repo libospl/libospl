@@ -11,9 +11,18 @@ Cargo.lock
 
 
 # Added by cargo
-
 /target
 /Cargo.lock
 
 # vim swap files
 *.swp
+
+# zed files
+.zed
+
+# coverage files
+cobertura.xml
+tarpaulin-report.html
+
+# macOS files
+*.DS_Store

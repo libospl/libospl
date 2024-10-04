@@ -125,4 +125,12 @@ impl Library
 		<Collection as crate::element::traits::InsideElementListing<Album>>::list_inside(&db, collection)
 	}
 
+	pub fn change_comment(&self, collection: u32, comment: &str) -> Result<(), OsplError>
+	{
+		let db = Database::new(self.fs.database_path())?;
+		let mut collection = self.get_collection_from_id(collection)?;
+		collection.update_comment(&db, comment)?;
+		Ok(())
+	}
+
 }
